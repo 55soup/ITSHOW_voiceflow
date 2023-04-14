@@ -4,15 +4,6 @@ import { useSpeechRecognition } from "react-speech-kit";
 import styled from "styled-components";
 
 function App() {
-  const [value, setValue] = useState("");
-  const { listen, listening, stop } = useSpeechRecognition({
-    onResult: (result) => {
-      // 음성인식 결과가 value 상태값으로 할당됩니다.
-      setValue(result);
-    },
-  });
-  let [idx, setIdx] = useState(0);
-  let [count, setCount] = useState(0);
   const proverbFront = [
     "가는 날이",
     "아닌 밤중에",
@@ -43,38 +34,54 @@ function App() {
     "씨가 된다",
     "겉핥기",
   ];
+  const [value, setValue] = useState("");
+  const { listen, listening, stop } = useSpeechRecognition({
+    onResult: (result) => {
+      // 음성인식 결과가 value 상태값으로 할당됩니다.
+      setValue(result);
+    },
+  });
+  let [idx, setIdx] = useState(0);
+  let [count, setCount] = useState(0);
+  let [correct, setCorrect] = useState(false);
+
+  useEffect(() => {
+    setCorrect(proverbBack[idx] === value);
+    if (correct) {
+      console.log(correct);
+      // proverbBack[idx] === value 가 true => 정답, 다음문제로 넘어감(idx가 바뀜. 인식)
+      setIdx(Math.floor(Math.random() * (proverbFront.length - 1)) + 1);
+      setValue("");
+      setCorrect(false);
+      setCount(count + 1);
+      // console.log(`${correct} ${idx} 값이 바뀌었음.`);
+    }
+  }, [value, idx]);
+
   // toggle버튼 관리
   const [toggle, setToggle] = useState(false);
-  const [state, setState] = useState(false);
 
   const clickedToggle = () => {
     setToggle((prev) => !prev);
   };
-  // let idx = Math.floor(Math.random() * (proverbFront.length - 1)) + 1;
-  function correct() {
-    setState(proverbBack[idx] === value);
-    // 점수세기
-    setCount(count + 1);
-    // value 비우기
-    // idx 바꾸기
-    return state;
-  }
 
   function toNext() {
     setIdx(Math.floor(Math.random() * (proverbFront.length - 1)) + 1);
-    console.log(idx);
   }
+
   return (
     <div>
-      <div>{proverbFront[idx]}</div>
-      <div>{value}</div>
-      <div
-        style={
-          proverbBack[idx] === value ? { color: "green" } : { color: "red" }
-        }
-      >
-        {proverbBack[idx] === value ? "맞았어!" : "땡"}
+      <div>
+        {correct
+          ? proverbFront[
+              Math.floor(Math.random() * (proverbFront.length - 1)) + 1
+            ]
+          : proverbFront[idx]}
       </div>
+      <div>{value}</div>
+      <CorrectStyle style={correct ? { color: "green" } : { color: "red" }}>
+        {correct ? "맞았어!" : "땡"}
+      </CorrectStyle>
       <RecordButton
         onClick={() => {
           clickedToggle();
@@ -99,7 +106,9 @@ const RecordButton = styled.button`
   border: 0;
 `;
 
-const correctColor = styled.div`
+const CorrectStyle = styled.div`
+  font-size: 2rem;
+  font-weight: 800;
   color: green;
 `;
 export default App;
