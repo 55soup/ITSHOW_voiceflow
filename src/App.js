@@ -9,7 +9,7 @@ const App = () => {
   return (
     <>
       {/* <Proverb /> */}
-      <Frame />
+      <Frame color={"#ff0000"} />
     </>
   );
 };

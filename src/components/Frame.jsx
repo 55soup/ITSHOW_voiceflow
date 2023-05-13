@@ -1,9 +1,10 @@
 import styled from "styled-components";
 
-const Frame = () => {
+const Frame = (props) => {
   return (
     <>
       <Container />
+      <Background color={props.color} />
     </>
   );
 };
@@ -16,13 +17,13 @@ const Container = styled.div`
   position: absolute;
   background-size: cover;
   background-repeat: no-repeat;
-  z-index: -1;
+  z-index: 1;
 `;
 
 const Background = styled.div`
   width: 100%;
-  height: 100%;
-  background-color: red;
+  height: 100vh;
+  background-color: ${(props) => props.color};
   z-index: -5;
 `;
 
