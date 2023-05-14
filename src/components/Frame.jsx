@@ -25,6 +25,7 @@ const Background = styled.div`
   height: 100vh;
   background-color: ${(props) => props.color};
   z-index: -5;
+  position: absolute;
 `;
 
 export default Frame;

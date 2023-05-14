@@ -1,16 +1,20 @@
 import "./App.css";
 import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useSpeechRecognition } from "react-speech-kit";
 import styled from "styled-components";
 import Proverb from "./pages/Proverb";
 import Frame from "./components/Frame";
+import Chamcham from "./pages/Chamcham";
 
 const App = () => {
   return (
-    <>
-      {/* <Proverb /> */}
-      <Frame color={"#ff0000"} />
-    </>
+ <Router>
+        <Routes>
+          <Route path="/" element={<Proverb />} />
+          <Route path="/chamcham" element={<Chamcham />} />
+        </Routes>
+      </Router>
   );
 };
 
