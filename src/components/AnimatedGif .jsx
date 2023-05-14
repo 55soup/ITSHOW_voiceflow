@@ -28,7 +28,7 @@ const AnimatedGif = () => {
     };
   }, []);
 
-  return <img ref={gifRef} src={Spacemotion} alt="애니메이션 GIF" style={{ width: 909, height: 621, zIndex: -3, marginTop: 590 }} />;
+  return <img ref={gifRef} src={Spacemotion} alt="애니메이션 GIF" style={{ width: 909, height: 621, zIndex: -3 }} />;
 };
 
 export default AnimatedGif;
