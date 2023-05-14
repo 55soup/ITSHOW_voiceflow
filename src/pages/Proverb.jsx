@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSpeechRecognition } from "react-speech-kit";
 import styled from "styled-components";
+import Frame from "../components/Frame";
 
 function PRoverb() {
   const proverbFront = [
@@ -48,9 +49,9 @@ function PRoverb() {
     setCorrect(proverbBack[idx] === value);
     if (correct) {
       console.log(correct);
+      setValue("");
       // proverbBack[idx] === value 가 true => 정답, 다음문제로 넘어감(idx가 바뀜. 인식)
       setIdx(Math.floor(Math.random() * (proverbFront.length - 1)) + 1);
-      setValue("");
       setCorrect(false);
       setCount(count + 1);
       // console.log(`${correct} ${idx} 값이 바뀌었음.`);
@@ -69,36 +70,74 @@ function PRoverb() {
   }
 
   return (
-    <div>
-      <div>
-        {correct
-          ? proverbFront[
-              Math.floor(Math.random() * (proverbFront.length - 1)) + 1
-            ]
-          : proverbFront[idx]}
-      </div>
-      <div>{value}</div>
-      <CorrectStyle style={correct ? { color: "green" } : { color: "red" }}>
-        {correct ? "맞았어!" : "땡"}
-      </CorrectStyle>
-      <RecordButton
-        onClick={() => {
-          clickedToggle();
-          !toggle ? listen({ interimResults: true }) : stop();
-        }}
-        toggle={toggle}
-      >
-        🎤
-      </RecordButton>
-      {listening && <div>음성인식 활성화 중</div>}
-      <button onClick={toNext}>></button>
-      <div>count: {count}</div>
-    </div>
+    <>
+      <Container>
+        <SpeechBubble rotate={"rotate(180deg)"}>
+          <SpeechText rotate={"rotate(180deg)"} padding={"7.2rem"}>
+            {correct
+              ? proverbFront[
+                  Math.floor(Math.random() * (proverbFront.length - 1)) + 1
+                ]
+              : proverbFront[idx]}
+          </SpeechText>
+        </SpeechBubble>
+        <SpeechBubble rotate={"rotate(0deg)"}>
+          <SpeechText rotate={"rotate(0deg)"} padding={"2.8rem"}>
+            {value}
+          </SpeechText>
+        </SpeechBubble>
+        <CorrectStyle style={correct ? { color: "green" } : { color: "red" }}>
+          {correct ? "맞았어!" : "땡"}
+        </CorrectStyle>
+        <RecordButton
+          onClick={() => {
+            clickedToggle();
+            !toggle ? listen({ interimResults: true }) : stop();
+          }}
+          toggle={toggle}
+        >
+          🎤
+        </RecordButton>
+        {listening && <div>음성인식 활성화 중</div>}
+        <button onClick={toNext}>></button>
+        <div style={{ color: "white" }}>count: {count}</div>
+      </Container>
+      <Frame color={"#242526"} />
+    </>
   );
 }
 
+const Container = styled.div`
+  width: 100%;
+  height: 100vh;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+`;
+
+const SpeechBubble = styled.div`
+  width: 45rem;
+  height: 13rem;
+  background-image: url("images/speechbubble.png");
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  transform: ${(props) => props.rotate};
+  display: flex;
+  justify-content: center;
+`;
+
+const SpeechText = styled.div`
+  padding-top: ${(props) => props.padding};
+  font-size: 3rem;
+  transform: ${(props) => props.rotate};
+`;
+
 const RecordButton = styled.button`
-  width: 4vw;
+  width: 10vw;
   height: 4vw;
   background-color: ${(props) => (props.toggle ? "red" : "none")};
   border-radius: 5rem;
