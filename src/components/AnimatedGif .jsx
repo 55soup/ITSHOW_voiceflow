@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import Spacemotion from '../image/spacemotion.gif';
 
 const AnimatedGif = () => {
   const gifRef = useRef(null);
@@ -28,7 +27,7 @@ const AnimatedGif = () => {
     };
   }, []);
 
-  return <img ref={gifRef} src={Spacemotion} alt="애니메이션 GIF" style={{ width: 909, height: 621, zIndex: -3 }} />;
+  return <img ref={gifRef} src="images/spacemotion.gif" alt="애니메이션 GIF" style={{ width: 909, height: 621, zIndex: -3 }} />;
 };
 
 export default AnimatedGif;
