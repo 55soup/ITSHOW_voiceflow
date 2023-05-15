@@ -1,8 +1,5 @@
 import React from "react";
 import Frame from "../components/Frame";
-import Spacemotion from "../image/spacemotionn.mp4";
-import AnimatedGif from "../components/AnimatedGif ";
-import titletext from "../image/titletext.png";
 function Chamcham() {
   return (
     <>
@@ -14,17 +11,16 @@ function Chamcham() {
           style={{
             width: 837,
             height: 373,
-            backgroundImage: `url(${titletext})`,
+            backgroundImage: "url(images/titletext.png)",
             marginLeft: 100,
             color: "black",
           }}
         >
           dsfdsfsfsdfsdsdfdsf
         </div>
-        {/* <AnimatedGif /> */}
       </div>
       <video autoplay="autoplay" muted="muted" loop="loop" controls>
-        <source src={Spacemotion} />
+        <source src="images/spacemotion.mp4" />
       </video>
     </>
   );
