@@ -16,8 +16,22 @@ function PRoverb() {
     "똥 묻은 개가",
     "우물 안",
     "콩 심은데 콩 나고",
-    "말이",
     "수박",
+    "발 없는 말이",
+    "가는 말이 고와야",
+    "낮말은 새가 듣고",
+    "열 손가락 깨물어서",
+    "낫 놓고",
+    "등잔밑이",
+    "고래싸움에",
+    "세살 버릇이",
+    "웃는 사람 얼굴에",
+    "뛰는 놈 위에",
+    "꿩 대신",
+    "빛 좋은",
+    "백지장도",
+    "티끌모아",
+    "금강산도",
   ];
   const proverbBack = [
     "장날이다",
@@ -25,14 +39,28 @@ function PRoverb() {
     "낯짝이있다",
     "경 읽기",
     "외양간 고친다",
-    "부뚜막에 올라간다",
+    "부뚜막에 올라간다", // 부뚜막, 올라 (특정 단어만 있어도 통과)
     "바위 치기",
     "올챙이 적 기억 못 한다",
     "겨 묻은 개 나무란다",
     "개구리",
     "팥 심은데 팥 난다",
-    "씨가 된다",
     "겉핥기",
+    "천리 간다",
+    "오는 말이 곱다",
+    "밤말은 쥐가 듣는다",
+    "안 아픈 손가락 없다",
+    "기역자도 모른다",
+    "어둡다",
+    "새우 등 터진다",
+    "여든까지 간다",
+    "침 못 뱉는다",
+    "나는 놈 있다",
+    "닭",
+    "개살구",
+    "맞들면 낫다",
+    "태산",
+    "식후경",
   ];
   const [value, setValue] = useState("");
   const { listen, listening, stop } = useSpeechRecognition({
@@ -112,6 +140,7 @@ function PRoverb() {
   return (
     <>
       <Container>
+        <div style={{ color: "white", fontSize: "5rem" }}>count: {count}</div>
         <SpeechBubble rotate={"rotate(180deg)"}>
           <SpeechText rotate={"rotate(180deg)"} padding={"13vw"}>
             {proverbFront[idx]}
@@ -136,7 +165,6 @@ function PRoverb() {
         </RecordButton>
         {listening && <div>음성인식 활성화 중</div>}
         <button onClick={toNext}>></button>
-        <div style={{ color: "white" }}>count: {count}</div>
       </Container>
       <Frame color={"#242526"} />
     </>
@@ -151,6 +179,7 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
   z-index: 100;
 `;
 
@@ -181,7 +210,7 @@ const RecordButton = styled.button`
 `;
 
 const CorrectStyle = styled.div`
-  font-size: 2rem;
+  font-size: 5rem;
   font-weight: 800;
   color: green;
 `;
