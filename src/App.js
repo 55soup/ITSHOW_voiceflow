@@ -7,6 +7,7 @@ import Main from "./pages/Main";
 import Proverb from "./pages/Proverb";
 import Frame from "./components/Frame";
 import Chamcham from "./pages/Chamcham";
+import ChooseGame from "./pages/ChooseGame";
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
         <Route path="/" element={<Main />} />
         <Route path="/proverb" element={<Proverb />} />
         <Route path="/chamcham" element={<Chamcham />} />
+        <Route path="/choosegame" element={<ChooseGame />} />
       </Routes>
     </Router>
   );
