@@ -31,8 +31,8 @@ function Chamcham() {
   const typingTextRef = useRef(null);
 
   const handleTextChange = () => {
-  const newText = `우주선의 운행 방식은 아래와 같다.\n
-										1. 대원의 몸을 화면에 인식.\n
+  const newText = `우주선의 운행 방식은 아래와 같다.
+										1. 대원의 몸을 화면에 인식.
 										2. 화면에 선택에 따라, 오른쪽, 왼쪽 방향에 따라 몸을 움직이면서 랜덤으로 이동하고 싶은 방향으로 이동`;
   // 텍스트를 변경하는 함수
 	setText(newText);
@@ -43,8 +43,9 @@ function Chamcham() {
 
 
   return (
-    <>
+    <div style={{marginTop: '-62px'}}>
       <Container>
+        <Heart/><Heart style={{left: 244}}/><Heart style={{left: 320}}/>
         <Box>
           <TypingText text={text} ref={typingTextRef} />
           <Text onClick={handleTextChange}>skip</Text>
@@ -52,9 +53,10 @@ function Chamcham() {
         <video style={videoStyle} autoPlay muted loop>
           <source src="images/spacemotion.mp4" />
         </video>
+        <Img></Img>
       </Container>
       <Frame color={"#000000"} />
-    </>
+    </div>
   );
 }
 
@@ -103,13 +105,23 @@ const TypingText = React.forwardRef(({ text }, ref) => {
   return (
     <div>
 			{/* 텍스트가 출력될 곳 */}
-      <p className="text" style={{ fontSize: "2.5rem", padding: 75}}>
+      <p className="text" style={{ fontSize: "2.8rem", padding: 65}}>
         {Text}
       </p>
     </div>
   );
 });
 
+const Heart = styled.div`
+  position: absolute;
+  background-size: cover;
+  z-index: 994;
+  background-image: url(images/heart.png);
+  width: 56px;
+  height: 56px;
+  left: 168px;
+  top: 222px;
+`
 const Container = styled.div`
   width: 100%;
   height: 100vh;
@@ -150,5 +162,14 @@ const Text = styled.button`
   top: 280px;
   z-index: 6;
 `;
+
+const Img = styled.div`
+  position: absolute;
+  background-image: url(images/charcenter.png);
+  width: 475px;
+  height: 538px;
+  left: 320px;
+  top: 1001px;
+`
 
 export default Chamcham;
