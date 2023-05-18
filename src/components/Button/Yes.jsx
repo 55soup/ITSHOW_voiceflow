@@ -1,19 +1,15 @@
 import styled from "styled-components";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 
-function Start() {
-  const navigate = useNavigate();
+function Start(props) {
   const [isMousedown, SetMousedown] = useState(false);
-  const onclick = () => {
-    navigate("/proverb");
-  };
+
   const mousedown = () => {
     SetMousedown(!isMousedown);
   };
   return (
     <Container
-      onClick={onclick}
+      onClick={props.onClick}
       onMouseDown={mousedown}
       className={`${isMousedown ? `button--mousedown` : ""} `}
     />
