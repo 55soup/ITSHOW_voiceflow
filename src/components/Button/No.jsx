@@ -6,13 +6,17 @@ function No(props) {
   const navigate = useNavigate();
   const [isMousedown, SetMousedown] = useState(false);
   const mousedown = () => {
-    SetMousedown(!isMousedown);
+    SetMousedown(true);
+  };
+  const mouseup = () => {
+    SetMousedown(false);
   };
   return (
     <Container
       onClick={props.onClick}
       onMouseDown={mousedown}
-      className={`${isMousedown ? `button--mousedown` : ""} `}
+      onMouseUp={mouseup}
+      className={`${isMousedown ? `button--mousedown` : ""}`}
     />
   );
 }
