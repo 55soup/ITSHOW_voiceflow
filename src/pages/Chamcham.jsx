@@ -27,6 +27,8 @@ function Chamcham() {
     "오류..발생 ... 오류 발..zz 생 현재 비확인 물체가 뿜어낸 전자파로 인해 우주선 운행 프로그램에 오류가 발생했다. 대원들은 신속하게 수동으로 우주선을 조종해 비확인 물체로부터 우주선을 보호해라."
   );
 
+  const [count, setCount] = useState(0);
+
   // useRef 훅을 사용하여 typingTextRef라는 변수 생성
   const typingTextRef = useRef(null);
 
@@ -36,10 +38,16 @@ function Chamcham() {
 										2. 화면에 선택에 따라, 오른쪽, 왼쪽 방향에 따라 몸을 움직이면서 랜덤으로 이동하고 싶은 방향으로 이동`;
     // 텍스트를 변경하는 함수
     setText(newText);
+    setCount(count+1)
+    console.log(count)
     // typingTextRef의 resetTyping 함수 호출
     // // typingTextRef의 resetTyping 함수 호출
     typingTextRef.current.resetTyping();
   };
+
+  const StartEvent = () => {
+    console.log("dksd")
+  }
 
   return (
     <div style={{ marginTop: "-62px" }}>
@@ -49,7 +57,7 @@ function Chamcham() {
         <Heart style={{ left: 320 }} />
         <Box>
           <TypingText text={text} ref={typingTextRef} />
-          <Text onClick={handleTextChange}>skip</Text>
+          <Text onClick={count >= 1 ? StartEvent : handleTextChange}>{count >= 1 ? "start" : "skip"}</Text>
         </Box>
         <video style={videoStyle} autoPlay muted loop>
           <source src="images/spacemotion.mp4" />
