@@ -15,37 +15,38 @@ const videoStyle = {
 };
 
 function Chamcham() {
-	// useNavigate 훅을 사용하여 navigate 함수를 받아옴
+  // useNavigate 훅을 사용하여 navigate 함수를 받아옴
   const navigate = useNavigate();
-	// "/" 경로로 이동하는 함수
+  // "/" 경로로 이동하는 함수
   const handleSkip = () => {
     navigate("/");
   };
 
-	// 초기 텍스트 상태를 설정하는 useState 훅
+  // 초기 텍스트 상태를 설정하는 useState 훅
   const [text, setText] = useState(
     "오류..발생 ... 오류 발..zz 생 현재 비확인 물체가 뿜어낸 전자파로 인해 우주선 운행 프로그램에 오류가 발생했다. 대원들은 신속하게 수동으로 우주선을 조종해 비확인 물체로부터 우주선을 보호해라."
   );
 
-	// useRef 훅을 사용하여 typingTextRef라는 변수 생성
+  // useRef 훅을 사용하여 typingTextRef라는 변수 생성
   const typingTextRef = useRef(null);
 
   const handleTextChange = () => {
-  const newText = `우주선의 운행 방식은 아래와 같다.
+    const newText = `우주선의 운행 방식은 아래와 같다.
 										1. 대원의 몸을 화면에 인식.
 										2. 화면에 선택에 따라, 오른쪽, 왼쪽 방향에 따라 몸을 움직이면서 랜덤으로 이동하고 싶은 방향으로 이동`;
-  // 텍스트를 변경하는 함수
-	setText(newText);
-	// typingTextRef의 resetTyping 함수 호출
-	// // typingTextRef의 resetTyping 함수 호출
-  typingTextRef.current.resetTyping();
-};
-
+    // 텍스트를 변경하는 함수
+    setText(newText);
+    // typingTextRef의 resetTyping 함수 호출
+    // // typingTextRef의 resetTyping 함수 호출
+    typingTextRef.current.resetTyping();
+  };
 
   return (
-    <div style={{marginTop: '-62px'}}>
+    <div style={{ marginTop: "-62px" }}>
       <Container>
-        <Heart/><Heart style={{left: 244}}/><Heart style={{left: 320}}/>
+        <Heart />
+        <Heart style={{ left: 244 }} />
+        <Heart style={{ left: 320 }} />
         <Box>
           <TypingText text={text} ref={typingTextRef} />
           <Text onClick={handleTextChange}>skip</Text>
@@ -61,42 +62,40 @@ function Chamcham() {
 }
 
 const TypingText = React.forwardRef(({ text }, ref) => {
-	// Text 상태 변수를 생성하고 초기값을 빈 문자열로 설정
+  // Text 상태 변수를 생성하고 초기값을 빈 문자열로 설정
   const [Text, setText] = useState("");
-	// Count 상태 변수를 생성하고 초기값을 0으로 설정
+  // Count 상태 변수를 생성하고 초기값을 0으로 설정
   const [Count, setCount] = useState(0);
 
   useEffect(() => {
-		// 컴포넌트가 렌더링될 때마다 실행되는 부수 효과 함수
+    // 컴포넌트가 렌더링될 때마다 실행되는 부수 효과 함수
     const interval = setInterval(() => {
-			// 0.1초마다 실행되는 인터벌 함수
+      // 0.1초마다 실행되는 인터벌 함수
 
-			// 이전 텍스트에 새로운 글자를 추가하여 Text 상태를 업데이트
+      // 이전 텍스트에 새로운 글자를 추가하여 Text 상태를 업데이트
       setText((prevText) => prevText + text[Count]);
-			// Count 상태를 1 증가시킴
+      // Count 상태를 1 증가시킴
       setCount((prevCount) => prevCount + 1);
     }, 100);
 
-
-		 // Count가 텍스트의 길이와 같아지면
+    // Count가 텍스트의 길이와 같아지면
     if (Count === text.length) {
-			// 인터벌 함수를 중지시킴
+      // 인터벌 함수를 중지시킴
       clearInterval(interval);
     }
 
-		// 컴포넌트가 사라질 때 인터벌 함수를 정리(cleanup)
+    // 컴포넌트가 사라질 때 인터벌 함수를 정리(cleanup)
     return () => clearInterval(interval);
-		// Count와 text가 변경될 때마다 부수 효과 함수가 실행
+    // Count와 text가 변경될 때마다 부수 효과 함수가 실행
   }, [Count, text]);
 
-
   useEffect(() => {
-		 // 컴포넌트가 렌더링될 때와 ref가 변경될 때마다 실행되는 부수 효과 함수
+    // 컴포넌트가 렌더링될 때와 ref가 변경될 때마다 실행되는 부수 효과 함수
     if (ref) {
       ref.current = {
         resetTyping: () => {
           setText(""); // Text 상태를 초기화
-          setCount(0);  // Count 상태를 초기화
+          setCount(0); // Count 상태를 초기화
         },
       };
     }
@@ -104,8 +103,8 @@ const TypingText = React.forwardRef(({ text }, ref) => {
 
   return (
     <div>
-			{/* 텍스트가 출력될 곳 */}
-      <p className="text" style={{ fontSize: "2.8rem", padding: 65}}>
+      {/* 텍스트가 출력될 곳 */}
+      <p className="text" style={{ fontSize: "2.8rem", padding: 65 }}>
         {Text}
       </p>
     </div>
@@ -121,7 +120,7 @@ const Heart = styled.div`
   height: 56px;
   left: 168px;
   top: 222px;
-`
+`;
 const Container = styled.div`
   width: 100%;
   height: 100vh;
@@ -165,11 +164,15 @@ const Text = styled.button`
 
 const Img = styled.div`
   position: absolute;
-  background-image: url(images/charcenter.png);
-  width: 475px;
-  height: 538px;
-  left: 320px;
-  top: 1001px;
-`
+  background-image: url(images/character2.png);
+  background-position: -2rem -3rem; //정면
+  /* background-position: -35rem -3rem; //왼쪽 */
+  /* background-position: -65rem -3rem; //오른쪽*/
+  background-repeat: no-repeat;
+  width: 30rem;
+  height: 32rem;
+  left: 40rem;
+  top: 100rem;
+`;
 
 export default Chamcham;
