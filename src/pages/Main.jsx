@@ -10,7 +10,9 @@ function Main() {
   const navigate = useNavigate();
   // "/" 경로로 이동하는 함수
   const toChoose = () => {
-    navigate("/choosegame");
+    setTimeout(() => {
+      navigate("/choosegame");
+    }, 3000);
   };
 
   // 초기 텍스트 상태를 설정하는 useState 훅
@@ -21,16 +23,14 @@ function Main() {
   // useRef 훅을 사용하여 typingTextRef라는 변수 생성
   const typingTextRef = useRef(null);
 
-  const handleTextChange = () => {
-    const newText = `오케이 롸져!`;
+  const handleTextChange = (text, isYes) => {
+    const newText = text;
     // 텍스트를 변경하는 함수
     setText(newText);
     // typingTextRef의 resetTyping 함수 호출
     // // typingTextRef의 resetTyping 함수 호출
     typingTextRef.current.resetTyping();
-    setTimeout(() => {
-      toChoose(); // 다음 페이지로 이동
-    }, 3000);
+    if (isYes) toChoose();
   };
   return (
     <>
@@ -40,8 +40,16 @@ function Main() {
           <TypingText text={text} ref={typingTextRef} />
         </Box>
         <BtnContainer>
-          <YesBtn onClick={handleTextChange} />
-          <NoBtn />
+          <YesBtn
+            onClick={() => {
+              handleTextChange("오케이 롸져!", true);
+            }}
+          />
+          <NoBtn
+            onClick={() => {
+              handleTextChange("...해주면 안되겠나? ～(　TロT)σ", false);
+            }}
+          />
         </BtnContainer>
       </Container>
       <Frame color="var(--background-main-color)" />
@@ -112,7 +120,6 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
   z-index: 100;
 `;
 const Image = styled.div`
