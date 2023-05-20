@@ -18,8 +18,8 @@ function Chamcham() {
   // useNavigate 훅을 사용하여 navigate 함수를 받아옴
   const navigate = useNavigate();
   // "/" 경로로 이동하는 함수
-  const handleSkip = () => {
-    navigate("/");
+  const StartEvent = () => {
+    navigate("/startcham");
   };
 
   // 초기 텍스트 상태를 설정하는 useState 훅
@@ -45,12 +45,8 @@ function Chamcham() {
     typingTextRef.current.resetTyping();
   };
 
-  const StartEvent = () => {
-    console.log("dksd")
-  }
-
   return (
-    <div style={{ marginTop: "-62px" }}>
+    <div>
       <Container>
         <Heart />
         <Heart style={{ left: 244 }} />
