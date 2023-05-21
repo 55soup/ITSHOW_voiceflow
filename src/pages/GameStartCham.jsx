@@ -1,20 +1,31 @@
 import React, { useState, useEffect, useRef } from "react";
 import Frame from "../components/Frame";
 import styled from "styled-components";
+import * as faceapi from 'face-api.js';
 import { useNavigate } from "react-router-dom";
 
 // 비디오 스타일을 정의한 객체
 const videoStyle = {
-	width: "838px",
-	height: "621px",
-	left: "128px",
-	top: "621px",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
   margin: "0 auto",
   marginLeft: "117px",
-	marginTop: "-128px"
+	marginTop: "-128px",
+  position: "absolute",
+  width: "838px",
+  height: "621px",
+  left: "4px",
+  top: "1184px"
+};
+
+// 비디오 스타일을 정의한 객체
+const CameraStyle = {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  margin: "0 auto",
+  width: "838px",
 };
 
 function Chamcham() {
@@ -44,6 +55,93 @@ function Chamcham() {
   const StartEvent = () => {
     console.log("dksd")
   }
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  let previousNoseX = 0;
+
+  useEffect(() => {
+    Promise.all([
+      faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
+      faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
+      faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
+      faceapi.nets.faceExpressionNet.loadFromUri('/models'),
+    ]).then(startVideo);
+  }, []);
+
+  const startVideo = () => {
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then((stream) => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const detectFace = async () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+
+      const displaySize = { width: video.videoWidth, height: video.videoHeight };
+      faceapi.matchDimensions(canvas, displaySize);
+
+      setInterval(async () => {
+        const detections = await faceapi
+          .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+          .withFaceLandmarks()
+          .withFaceExpressions();
+
+        const resizedDetections = faceapi.resizeResults(detections, displaySize);
+
+        canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+
+        const drawOptions = {
+          drawLines: true,
+          drawPoints: true,
+          lineWidth: 2,
+          lineColor: 'rgba(255, 0, 0, 0.5)',
+          pointColor: 'rgba(0, 255, 0, 0.5)',
+        };
+        faceapi.draw.drawFaceLandmarks(canvas, resizedDetections, drawOptions);
+
+        const faceDirection = getFaceDirection(resizedDetections);
+        if (faceDirection === 'left') {
+          console.log('왼쪽');
+        } else if (faceDirection === 'right') {
+          console.log('오른쪽');
+        }
+      }, 100);
+    }
+  };
+
+  const getFaceDirection = (detections) => {
+    if (!detections || detections.length === 0) {
+      return 'unknown';
+    }
+
+    const landmarks = detections[0].landmarks;
+    const noseX = landmarks.getNose()[0].x;
+
+    const movementDistance = Math.abs(noseX - previousNoseX);
+
+    let faceDirection = 'unknown';
+    const movementThreshold = 5;
+    if (movementDistance > movementThreshold) {
+      if (noseX < previousNoseX) {
+        faceDirection = 'left';
+      } else if (noseX > previousNoseX) {
+        faceDirection = 'right';
+      }
+
+      previousNoseX = noseX;
+    }
+
+    return faceDirection;
+  };
 
   return (
     <div>
@@ -54,11 +152,14 @@ function Chamcham() {
         <Box>
           <TypingText text={text} ref={typingTextRef} />
         </Box>
+        <div style={{ position: 'relative' }}>
+			    <video style={CameraStyle} ref={videoRef} onLoadedMetadata={detectFace} autoPlay muted />
+			    <canvas ref={canvasRef} style={{ position: 'absolute', top: 0, left: 0, width: 838 }}/>
+		    </div>
+        <Time>{Math.round(timeLeft)}</Time>
         <video style={videoStyle} autoPlay muted loop>
           <source src="images/spacemotion.mp4" />
         </video>
-				<Time>{Math.round(timeLeft)}</Time>
-        <Img></Img>
       </Container>
       <Frame color={"#000000"} />
     </div>
@@ -170,18 +271,5 @@ font-size: 140px;
 line-height: 140px;
 left: 450px;
 `
-
-const Img = styled.div`
-  position: absolute;
-  background-image: url(images/character2.png);
-  background-position: -2rem -3rem; //정면
-  /* background-position: -35rem -3rem; //왼쪽 */
-  /* background-position: -65rem -3rem; //오른쪽*/
-  background-repeat: no-repeat;
-  width: 30rem;
-  height: 32rem;
-  left: 40rem;
-  top: 105rem;
-`;
 
 export default Chamcham;
