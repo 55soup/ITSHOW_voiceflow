@@ -83,14 +83,16 @@ function Chamcham() {
   let previousNoseX = 0;
 
   useEffect(() => {
+    // 필요한 모델을 로드하는 Promise.all을 사용합니다.
     Promise.all([
-      faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
-      faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
-      faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
-      faceapi.nets.faceExpressionNet.loadFromUri('/models'),
+        faceapi.nets.tinyFaceDetector.loadFromUri("/models"), // 작은 얼굴 탐지 모델 로드
+        faceapi.nets.faceLandmark68Net.loadFromUri("/models"), // 68개의 얼굴 랜드마크 모델 로드
+        faceapi.nets.faceRecognitionNet.loadFromUri("/models"), // 얼굴 인식 모델 로드
+        faceapi.nets.faceExpressionNet.loadFromUri("/models"), // 표정 인식 모델 로드
     ]).then(startVideo);
   }, []);
 
+  // 비디오 스트림을 가져와서 비디오 요소에 연결
   const startVideo = () => {
     navigator.mediaDevices
       .getUserMedia({ video: true })
