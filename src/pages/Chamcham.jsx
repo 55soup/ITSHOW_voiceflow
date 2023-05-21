@@ -168,15 +168,17 @@ const Text = styled.button`
 
 const Img = styled.div`
   position: absolute;
-  background-image: url(images/character2.png);
-  background-position: -2rem -3rem; //정면
+  // background-image: url(images/character2.png);
+  background-image: url(images/char.png);
+  // background-position: -2rem -3rem; //정면
   /* background-position: -35rem -3rem; //왼쪽 */
   /* background-position: -65rem -3rem; //오른쪽*/
   background-repeat: no-repeat;
-  width: 30rem;
-  height: 32rem;
-  left: 40rem;
-  top: 100rem;
+  position: absolute;
+  width: 569px;
+  height: 645px;
+  left: 310px;
+  top: 1000px;
 `;
 
 export default Chamcham;
