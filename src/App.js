@@ -5,6 +5,7 @@ import { useSpeechRecognition } from "react-speech-kit";
 import styled from "styled-components";
 import Main from "./pages/Main";
 import Proverb from "./pages/Proverb";
+import Snack from "./pages/Snack"
 import Frame from "./components/Frame";
 import Chamcham from "./pages/Chamcham";
 
@@ -15,6 +16,7 @@ const App = () => {
         <Route path="/" element={<Main />} />
         <Route path="/proverb" element={<Proverb />} />
         <Route path="/chamcham" element={<Chamcham />} />
+        <Route path="/Snack" element={<Snack />} />
       </Routes>
     </Router>
   );
