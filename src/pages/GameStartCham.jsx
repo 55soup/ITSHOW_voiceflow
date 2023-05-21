@@ -39,6 +39,28 @@ function Chamcham() {
 		// 3초 간격
 		const timeRef = React.useRef(Date.now());
 
+    useEffect(() => {
+      const timeout = setTimeout(() => {
+        const interval = setInterval(() => {
+          setTimeLeft((prevTime) => {
+            if (prevTime === 1) {
+              clearInterval(interval); // 1초가 되면 인터벌 정지
+            }
+            return prevTime - 1;
+          });
+        }, 1000);
+        
+        return () => {
+          clearInterval(interval);
+        };
+      }, 7000); // 3초 후에 인터벌 시작
+    
+      return () => {
+        clearTimeout(timeout);
+      };
+    }, []);
+    
+
   // useRef 훅을 사용하여 typingTextRef라는 변수 생성
   const typingTextRef = useRef(null);
 
@@ -143,6 +165,22 @@ function Chamcham() {
 
     return faceDirection;
   };
+  const getRandomDirection = () => {
+    const directions = ["left", "right"];
+    const randomIndex = Math.floor(Math.random() * directions.length);
+    return directions[randomIndex];
+  };
+  // 사용 예시
+  const faceDirection = getRandomDirection();
+  console.log(faceDirection); // 랜덤하게 "left" 또는 "right" 출력
+  if(timeLeft == 0){
+    if(faceDirection != faceDirection){
+      console.log("땡")
+    }else{
+      console.log("성공")
+    }
+  }
+  
 
   return (
     <div>
