@@ -26,6 +26,7 @@ const CameraStyle = {
   alignItems: "center",
   margin: "0 auto",
   width: "838px",
+  transform: "scaleX(-1)" // 좌우 반전을 적용하는 부분
 };
 
 function Chamcham() {
@@ -110,9 +111,9 @@ function Chamcham() {
 
         const faceDirection = getFaceDirection(resizedDetections);
         if (faceDirection === 'left') {
-          console.log('왼쪽');
-        } else if (faceDirection === 'right') {
           console.log('오른쪽');
+        } else if (faceDirection === 'right') {
+          console.log('왼쪽');
         }
       }, 100);
     }
@@ -154,7 +155,7 @@ function Chamcham() {
         </Box>
         <div style={{ position: 'relative' }}>
 			    <video style={CameraStyle} ref={videoRef} onLoadedMetadata={detectFace} autoPlay muted />
-			    <canvas ref={canvasRef} style={{ position: 'absolute', top: 0, left: 0, width: 838 }}/>
+			    <canvas ref={canvasRef} style={{ position: 'absolute', top: 0, left: 0, width: 838, transform: "scaleX(-1)"}}/>
 		    </div>
         <Time>{Math.round(timeLeft)}</Time>
         <video style={videoStyle} autoPlay muted loop>
