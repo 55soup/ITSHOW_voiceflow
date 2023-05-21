@@ -1,17 +1,44 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Frame from "../components/Frame";
 import styled from "styled-components";
 
 function ChooseGame() {
   const navigator = useNavigate();
+  const [gameIdx, setGameIdx] = useState(0);
+  // const gameTitle = [
+  //   { "속담 이어말하기": "proverb" },
+  //   { "직접 움직여라\n참참참!": "chamcham" },
+  //   { "냠냠쩝쩝 과자 이름 맞추기": "ummm" },
+  // ];
+  const gameTitle = [
+    "속담 이어말하기",
+    "직접 움직여라\n참참참!",
+    "냠냠쩝쩝 과자 이름 맞추기",
+  ];
   return (
     <>
       <Container>
-        <Title>속담 이어말하기</Title>
+        <Title>{gameTitle[gameIdx]}</Title>
         <div>
-          <NextBtn onClick={() => {}}>back</NextBtn>
-          <NextBtn onClick={() => {}}>next</NextBtn>
+          <NextBtn
+            onClick={() => {
+              gameIdx <= 0
+                ? setGameIdx(gameTitle.length - 1)
+                : setGameIdx(gameIdx - 1);
+            }}
+          >
+            back
+          </NextBtn>
+          <NextBtn
+            onClick={() => {
+              gameIdx >= gameTitle.length - 1
+                ? setGameIdx(0)
+                : setGameIdx(gameIdx + 1);
+            }}
+          >
+            next
+          </NextBtn>
         </div>
         <Button
           onClick={() => {
@@ -59,5 +86,6 @@ const NextBtn = styled.button`
 const Title = styled.h2`
   font-size: 6rem;
   font-weight: lighter;
+  margin-top: 25rem;
 `;
 export default ChooseGame;
