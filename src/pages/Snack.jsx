@@ -8,6 +8,7 @@ function Snack() {
   const [randomImage, setRandomImage] = useState(null);
   const [transcript, setTranscript] = useState('');
   const [value, setValue] = useState('');
+  const [randomIndex, setRandomIndex] = useState(null);
 
   const { listen, listening, stop } = useSpeechRecognition({
     onResult: (result) => {
@@ -22,7 +23,12 @@ function Snack() {
   const handleStop = () => {
     stop();
   };
-  
+
+  const handleSend = () => {
+    if (transcript.toLowerCase() === imageListName[randomIndex]) {
+      getNextProblem();
+    }
+  };
 
   const onBoarding = () => (
     <div style={{ width: '50vw', alignContent: 'center' }}>
@@ -52,7 +58,7 @@ function Snack() {
     '마가렛트',
     '포스틱',
     '오징어땅콩',
-  ]
+  ];
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -63,46 +69,61 @@ function Snack() {
     };
   }, []);
 
-  useEffect(() => {
-    const getRandomImage = () => {
-      const randomIndex = Math.floor(Math.random() * imageList.length);
-      const selectedImage = imageList[randomIndex];
-      setRandomImage(selectedImage);
-    };
+  const getRandomImage = () => {
+    const randomIndex = Math.floor(Math.random() * imageList.length);
+    const selectedImage = imageList[randomIndex];
+    setRandomImage(selectedImage);
+    setRandomIndex(randomIndex);
+  };
 
+  useEffect(() => {
     getRandomImage();
-  }, [imageList]);
+  }, []);
 
   useEffect(() => {
-    if (transcript) {
-      setValue(transcript);
+    if (transcript && randomIndex !== null && transcript.toLowerCase() === imageListName[randomIndex]) {
+      getNextProblem();
     }
   }, [transcript]);
 
+  const getNextProblem = () => {
+    getRandomImage();
+  };
+
   return (
     <div style={{ display: 'flex', justifyContent: 'center' }}>
-      <Frame color="#000" />
       <Container>
         {showOnBoarding && onBoarding()}
         {!showOnBoarding && (
-          <div style={{ width: '60vw', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            {randomImage && <img src={randomImage} alt="Random" />}
+          <div style={{ maxWidth: '60vw', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+            {randomImage && <img src={randomImage} alt="Random" style={{ maxWidth: '600px' }} />}
+            <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
+              <Button onClick={handleListen} disabled={listening}>
+                Listen
+              </Button>
+              <Button onClick={handleStop} disabled={!listening}>
+                Stop
+              </Button>
+              <input
+                type="text"
+                value={value}
+                onChange={(e) => setTranscript(e.target.value)}
+                placeholder="Enter the recognized text..."
+              />
+              <Button onClick={handleSend}>Send</Button>
+            </div>
           </div>
         )}
-        <SpeechText rotate={"rotate(0deg)"} padding={"5vw"}>
-            {value}
-        </SpeechText>
-        <div>
-          <button onClick={handleListen}>Start Listening</button>
-          <button onClick={handleStop}>Stop Listening</button>
-        </div>
       </Container>
+      <Frame color="#000" />
     </div>
   );
 }
 
 const Button = styled.button`
-  padding: 50vw 30vw;
+  padding: 10px 20px;
+  font-size: 16px;
+  margin-left: 10px;
 `;
 
 const Container = styled.div`
@@ -115,13 +136,6 @@ const Container = styled.div`
   align-items: center;
   overflow: hidden;
   z-index: 100;
-`;
-
-const SpeechText = styled.div`
-  padding-top: ${(props) => props.padding};
-  font-size: 4.5vw;
-  transform: ${(props) => props.rotate};
-  color:#ffffff;
 `;
 
 const textStyletitle = {
