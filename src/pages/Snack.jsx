@@ -6,15 +6,16 @@ import { useSpeechRecognition } from "react-speech-kit";
 function Snack() {
   const [showOnBoarding, setShowOnBoarding] = useState(true);
   const [randomImage, setRandomImage] = useState(null);
-  const [transcript, setTranscript] = useState('');
+  const [transcript, setTranscript] = useState(null);
   const [value, setValue] = useState('');
   const [randomIndex, setRandomIndex] = useState(null);
 
-  const { listen, listening, stop } = useSpeechRecognition({
+  const { listen, listening, stop, transcript: recognizedTranscript } = useSpeechRecognition({
     onResult: (result) => {
-      setValue(result);
+      setTranscript(result);
     },
   });
+  
 
   const handleListen = () => {
     listen();
@@ -25,10 +26,15 @@ function Snack() {
   };
 
   const handleSend = () => {
-    if (transcript.toLowerCase() === imageListName[randomIndex]) {
+    if (transcript === imageListName[randomIndex]) {
+      console.log("맞았습니다.");
       getNextProblem();
+    } else {
+      console.log("틀렸습니다");
+      console.log(transcript, imageListName[randomIndex], randomIndex);
     }
   };
+  
 
   const onBoarding = () => (
     <div style={{ width: '50vw', alignContent: 'center' }}>
@@ -70,21 +76,23 @@ function Snack() {
   }, []);
 
   const getRandomImage = () => {
-    const randomIndex = Math.floor(Math.random() * imageList.length);
-    const selectedImage = imageList[randomIndex];
+    const newIndex = Math.floor(Math.random() * imageList.length);
+    const selectedImage = imageList[newIndex];
     setRandomImage(selectedImage);
-    setRandomIndex(randomIndex);
+    setRandomIndex(newIndex);
   };
+  
 
   useEffect(() => {
     getRandomImage();
   }, []);
 
   useEffect(() => {
-    if (transcript && randomIndex !== null && transcript.toLowerCase() === imageListName[randomIndex]) {
-      getNextProblem();
+    if (recognizedTranscript !== null) {
+      setTranscript(recognizedTranscript);
     }
-  }, [transcript]);
+  }, [recognizedTranscript]);
+  
 
   const getNextProblem = () => {
     getRandomImage();
@@ -106,8 +114,11 @@ function Snack() {
               </Button>
               <input
                 type="text"
-                value={value}
-                onChange={(e) => setTranscript(e.target.value)}
+                value={transcript}
+                onChange={(e) => {
+                  setValue(e.target.value);
+                  setTranscript(e.target.value);
+                }}
                 placeholder="Enter the recognized text..."
               />
               <Button onClick={handleSend}>Send</Button>
