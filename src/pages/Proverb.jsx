@@ -166,7 +166,7 @@ function PRoverb() {
         {listening && <div>음성인식 활성화 중</div>}
         <button onClick={toNext}>></button>
       </Container>
-      <Frame color={"#242526"} />
+      <Frame color={"var(--background-main-color)"} />
     </>
   );
 }
@@ -179,7 +179,6 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
   z-index: 100;
 `;
 

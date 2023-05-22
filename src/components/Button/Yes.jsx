@@ -1,20 +1,20 @@
 import styled from "styled-components";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 
-function Start() {
-  const navigate = useNavigate();
+function Start(props) {
   const [isMousedown, SetMousedown] = useState(false);
-  const onclick = () => {
-    navigate("/proverb");
-  };
+
   const mousedown = () => {
-    SetMousedown(!isMousedown);
+    SetMousedown(true);
+  };
+  const mouseup = () => {
+    SetMousedown(false);
   };
   return (
     <Container
-      onClick={onclick}
+      onClick={props.onClick}
       onMouseDown={mousedown}
+      onMouseUp={mouseup}
       className={`${isMousedown ? `button--mousedown` : ""} `}
     />
   );
@@ -22,7 +22,7 @@ function Start() {
 
 const Container = styled.div`
   width: 30rem;
-  height: 25rem;
+  height: 24rem;
   background-image: url("images/buttons.png");
   background-position: -5rem -3rem;
   background-size: 480%;

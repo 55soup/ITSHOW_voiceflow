@@ -2,20 +2,21 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-function No() {
+function No(props) {
   const navigate = useNavigate();
   const [isMousedown, SetMousedown] = useState(false);
-  const onclick = () => {
-    navigate("/chamcham");
-  };
   const mousedown = () => {
-    SetMousedown(!isMousedown);
+    SetMousedown(true);
+  };
+  const mouseup = () => {
+    SetMousedown(false);
   };
   return (
     <Container
-      onClick={onclick}
+      onClick={props.onClick}
       onMouseDown={mousedown}
-      className={`${isMousedown ? `button--mousedown` : ""} `}
+      onMouseUp={mouseup}
+      className={`${isMousedown ? `button--mousedown` : ""}`}
     />
   );
 }
