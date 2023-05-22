@@ -21,8 +21,8 @@ MongoClient.connect(
       }
     );
     //서버띄우는 코드 여기로 옮기기
-    app.listen("8080", function () {
-      console.log("listening on 8080");
+    app.listen(process.env.PORT, function () {
+      console.log(`listening on ${process.env.PORT}`);
     });
   }
 );
