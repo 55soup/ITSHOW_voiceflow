@@ -11,6 +11,8 @@ function Main() {
   // "/" 경로로 이동하는 함수
   const toChoose = () => {
     setTimeout(() => {
+      // 이동 애니메이션
+
       navigate("/choosegame");
     }, 3000);
   };
