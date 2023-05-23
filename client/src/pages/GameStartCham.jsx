@@ -26,7 +26,8 @@ const CameraStyle = {
   alignItems: "center",
   margin: "0 auto",
   width: "838px",
-  transform: "scaleX(-1)" // 좌우 반전을 적용하는 부분
+  transform: "scaleX(-1)", // 좌우 반전을 적용하는 부분
+  marginLeft: "52px",
 };
 
 function Chamcham() {
@@ -49,13 +50,6 @@ function Chamcham() {
           setTimeLeft((prevTime) => {
             if (prevTime === 1) {
               clearInterval(interval); // 1초가 되면 인터벌 정지
-              // 랜덤으로 왼쪽 또는 오른쪽 선택
-              const randomDirection = getRandomDirection();
-              setComputerDirection(randomDirection);
-              // 사용자가 선택한 방향과 컴퓨터가 선택한 방향이 같은지 확인
-              if (randomDirection === getFaceDirection()) {
-                setText("실패");
-              }
             }
             return prevTime - 1;
           });
@@ -111,24 +105,33 @@ function Chamcham() {
       });
   };
 
+  //얼구을 감지하는 함수 
   const detectFace = async () => {
+    // 비디오 요소와 캔버스 요소가 존재하는 경우 실행 
     if (videoRef.current && canvasRef.current) {
       const video = videoRef.current;
       const canvas = canvasRef.current;
 
+      // 비디오 및 캔버스 크기 설정 
       const displaySize = { width: video.videoWidth, height: video.videoHeight };
+      // 캔버스 크기를 비디오 크기에 맞게 조정 
       faceapi.matchDimensions(canvas, displaySize);
 
+      // 일정 간격으로 실행되는 인터벌 함수 
       setInterval(async () => {
+        // 비디오에서 얼굴을 감지하고 얼굴 랜드마크 및 표정을 분석 
         const detections = await faceapi
           .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
           .withFaceLandmarks()
           .withFaceExpressions();
-
+        
+        // 감지 결과를 비디오 크기에 맞게 조정 
         const resizedDetections = faceapi.resizeResults(detections, displaySize);
 
+        //캔버스 지우고 초기화 
         canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
 
+        //그리기 옵션 
         const drawOptions = {
           drawLines: true,
           drawPoints: true,
@@ -136,15 +139,21 @@ function Chamcham() {
           lineColor: 'rgba(255, 0, 0, 0.5)',
           pointColor: 'rgba(0, 255, 0, 0.5)',
         };
+        //얼굴 랜드마크 캔버스에 그림 
         faceapi.draw.drawFaceLandmarks(canvas, resizedDetections, drawOptions);
 
+        //얼굴 방향을 가져옴 
         const faceDirection = getFaceDirection(resizedDetections);
+        // 얼굴 방향에 따라 콘솔창에 출력
         if (faceDirection === 'left') {
           console.log('오른쪽');
+          return "right";
         } else if (faceDirection === 'right') {
           console.log('왼쪽');
+          return "left"
         }
-      }, 100);
+        //0.1초마다 인터벌 실행
+      }, 3000);
     }
   };
 
@@ -167,7 +176,7 @@ function Chamcham() {
         faceDirection = 'right';
       }
 
-      previousNoseX = faceDirection;
+      previousNoseX = noseX;
     }
 
     return faceDirection;
@@ -189,12 +198,12 @@ function Chamcham() {
         </Box>
         <div style={{ position: 'relative' }}>
 			    <video style={CameraStyle} ref={videoRef} onLoadedMetadata={detectFace} autoPlay muted />
-			    <canvas ref={canvasRef} style={{ position: 'absolute', top: 0, left: 0, width: 838, transform: "scaleX(-1)"}}/>
+			    <canvas ref={canvasRef} style={{ position: 'absolute', top: 0, left: 0, width: 838, transform: "scaleX(-1)", marginLeft: "52px"}}/>
 		    </div>
         <Time>{Math.round(timeLeft)}</Time>
-        <video style={videoStyle} autoPlay muted loop>
+        {/* <video style={videoStyle} autoPlay muted loop>
           <source src="images/spacemotion.mp4" />
-        </video>
+        </video> */}
       </Container>
       <Frame color={"#000000"} />
     </div>
