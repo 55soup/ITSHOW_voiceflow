@@ -6,26 +6,22 @@ import styled from "styled-components";
 function ChooseGame() {
   const navigator = useNavigate();
   const [gameIdx, setGameIdx] = useState(0);
-  // const gameTitle = [
-  //   { "속담 이어말하기": "proverb" },
-  //   { "직접 움직여라\n참참참!": "chamcham" },
-  //   { "냠냠쩝쩝 과자 이름 맞추기": "ummm" },
-  // ];
   const gameTitle = [
-    "속담 이어말하기",
-    "직접 움직여라\n참참참!",
-    "냠냠쩝쩝 과자 이름 맞추기",
+    { text: "속담 이어말하기", url: "proverb" },
+    { text: "직접 움직여라참참참!", url: "chamcham" },
+    { text: "냠냠쩝쩝 과자이름 맞추기", url: "snack" },
   ];
   return (
     <>
       <Container>
-        <Title>{gameTitle[gameIdx]}</Title>
+        <Title>{gameTitle[gameIdx].text}</Title>
         <div>
           <NextBtn
             onClick={() => {
               gameIdx <= 0
                 ? setGameIdx(gameTitle.length - 1)
                 : setGameIdx(gameIdx - 1);
+              console.log(gameIdx);
             }}
           >
             back
@@ -35,6 +31,7 @@ function ChooseGame() {
               gameIdx >= gameTitle.length - 1
                 ? setGameIdx(0)
                 : setGameIdx(gameIdx + 1);
+              console.log(gameIdx);
             }}
           >
             next
@@ -42,7 +39,7 @@ function ChooseGame() {
         </div>
         <Button
           onClick={() => {
-            navigator("/proverb");
+            navigator(`/${gameTitle[gameIdx].url}`);
           }}
         >
           START
