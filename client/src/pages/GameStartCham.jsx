@@ -30,21 +30,32 @@ const CameraStyle = {
 };
 
 function Chamcham() {
+
   // 초기 텍스트 상태를 설정하는 useState 훅
   const [text, setText] = useState(
-    "미확인 물체 발견 !! 대원은 이동할 방향을 선택해 움직여라"
+    "미확인 물체 발견 !! 대원은 왼쪽과 오른쪽 중에 이동할 방향을 선택해 움직여라"
   );
 	  // timeLeft : 시작 3초 설정
 		const [timeLeft, setTimeLeft] = useState(3);
 		// 3초 간격
 		const timeRef = React.useRef(Date.now());
-
+    // 컴퓨터 선택 방향 상태
+    const [computerDirection, setComputerDirection] = useState("");
+  
+    // 1초가 되면 정지되도록 코드 수정(3->2->1->0초에서 타이머 멈춤)
     useEffect(() => {
       const timeout = setTimeout(() => {
         const interval = setInterval(() => {
           setTimeLeft((prevTime) => {
             if (prevTime === 1) {
               clearInterval(interval); // 1초가 되면 인터벌 정지
+              // 랜덤으로 왼쪽 또는 오른쪽 선택
+              const randomDirection = getRandomDirection();
+              setComputerDirection(randomDirection);
+              // 사용자가 선택한 방향과 컴퓨터가 선택한 방향이 같은지 확인
+              if (randomDirection === getFaceDirection()) {
+                setText("실패");
+              }
             }
             return prevTime - 1;
           });
@@ -64,24 +75,18 @@ function Chamcham() {
   // useRef 훅을 사용하여 typingTextRef라는 변수 생성
   const typingTextRef = useRef(null);
 
-  const handleTextChange = () => {
-    const newText = `우주선의 운행 방식은 아래와 같다.
-										1. 대원의 몸을 화면에 인식.
-										2. 화면에 선택에 따라, 오른쪽, 왼쪽 방향에 따라 몸을 움직이면서 랜덤으로 이동하고 싶은 방향으로 이동`;
+  const handleTextChange = (text) => {
     // 텍스트를 변경하는 함수
-    setText(newText);
+    setText('ㅇ');
     // typingTextRef의 resetTyping 함수 호출
     // // typingTextRef의 resetTyping 함수 호출
     typingTextRef.current.resetTyping();
   };
-
-  const StartEvent = () => {
-    console.log("dksd")
-  }
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   let previousNoseX = 0;
 
+  //face.api.js 모듈 사용 
   useEffect(() => {
     // 필요한 모델을 로드하는 Promise.all을 사용합니다.
     Promise.all([
@@ -162,7 +167,7 @@ function Chamcham() {
         faceDirection = 'right';
       }
 
-      previousNoseX = noseX;
+      previousNoseX = faceDirection;
     }
 
     return faceDirection;
@@ -172,17 +177,6 @@ function Chamcham() {
     const randomIndex = Math.floor(Math.random() * directions.length);
     return directions[randomIndex];
   };
-  // 사용 예시
-  const faceDirection = getRandomDirection();
-  console.log(faceDirection); // 랜덤하게 "left" 또는 "right" 출력
-  if(timeLeft == 0){
-    if(faceDirection != faceDirection){
-      console.log("땡")
-    }else{
-      console.log("성공")
-    }
-  }
-  
 
   return (
     <div>
@@ -207,6 +201,7 @@ function Chamcham() {
   );
 }
 
+// 타이핑 효과 
 const TypingText = React.forwardRef(({ text }, ref) => {
   // Text 상태 변수를 생성하고 초기값을 빈 문자열로 설정
   const [Text, setText] = useState("");
