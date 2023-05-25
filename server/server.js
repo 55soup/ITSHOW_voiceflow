@@ -1,11 +1,16 @@
 const express = require("express");
 const app = express();
+const path = require("path");
+//  bodyparser 혹은 express.json을 설정해야 기본값 undefined가 바뀜
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 require("dotenv").config();
 const MongoClient = require("mongodb").MongoClient;
 
-app.use("/", (req, res) => {
-  res.send("hi");
+app.use(express.static(path.join(__dirname, "../client/build")));
+
+app.get("/", function (req, res) {
+  res.sendFile(path.join(__dirname, "../client/build/index.html"));
 });
 
 MongoClient.connect(
@@ -14,15 +19,25 @@ MongoClient.connect(
     if (에러) return console.log(에러);
     db = client.db("voiceflow");
 
-    db.collection("score").insertOne(
-      { name: "John", phone: "01012341234", score: 538 },
-      (error, result) => {
-        console.log("저장완료");
-      }
-    );
     //서버띄우는 코드 여기로 옮기기
     app.listen(process.env.PORT, function () {
       console.log(`listening on ${process.env.PORT}`);
     });
   }
 );
+
+// 점수 제출
+app.post("/submit", (req, res) => {
+  db.collection("scores").insertOne(
+    { name: req.body.name, phone: req.body.phone, score: req.body.score },
+    (error, result) => {
+      res.redirect("/");
+      console.log("저장완료");
+    }
+  );
+});
+
+// react router 연결
+app.get("*", function (req, res) {
+  res.sendFile(path.join(__dirname, "../client/build/index.html"));
+});
