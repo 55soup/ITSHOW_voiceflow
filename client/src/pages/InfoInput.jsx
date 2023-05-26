@@ -16,6 +16,7 @@ export default function InfoInput() {
     let telRegex = /\d{3}\d{4}\d{4}/;
     let name = formdata.name;
     let phone = formdata.phone;
+    let score = 500;
     console.log(name);
     if (name === "" || phone === "") alert("데이터를 입력해주세요");
     else if (telRegex.test(phone)) {
@@ -25,7 +26,7 @@ export default function InfoInput() {
         headers: {
           "Content-Type": "application/json; charset=utf-8",
         },
-        body: JSON.stringify(name),
+        body: JSON.stringify({name, phone, score}),
       })
         .then((res) => {
           console.log(res);

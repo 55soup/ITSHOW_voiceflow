@@ -30,7 +30,7 @@ MongoClient.connect(
 // 점수 제출
 app.post("/submit", (req, res) => {
   db.collection("scores").insertOne(
-    { "name": req.body.name, "phone": "01012341234", "score": 2000 },
+    { name: req.body.name, phone: req.body.phone, score: req.body.score },
     (error, result) => {
       res.redirect("/");
       console.log("저장완료");
