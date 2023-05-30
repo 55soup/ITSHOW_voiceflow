@@ -28,7 +28,7 @@ MongoClient.connect(
 );
 
 // 점수 제출
-app.post("/submit", (req, res) => {
+app.post("/api/submit", (req, res) => {
   db.collection("scores").insertOne(
     { name: req.body.name, phone: req.body.phone, score: req.body.score },
     (error, result) => {
@@ -38,6 +38,17 @@ app.post("/submit", (req, res) => {
     }
   );
 });
+
+app.get("/api/scorerank", (req, res) => {
+  if (err) throw err;
+  let dbo = db.db("mydb");
+  let mysort = { score: -1 }; //score를 기준으로 내림차순 정렬
+  dbo.collection("scores").find().sort(mysort).toArray(function(err, result) {
+    if (err) throw err;
+    console.log(result);
+    db.close();
+  });
+})
 
 // react router 연결
 app.get("*", function (req, res) {

@@ -5,6 +5,7 @@ import Frame from "../components/Frame";
 import styled from "styled-components";
 
 export default function InfoInput() {
+  const navigator = useNavigate();
   const [formdata, setformdata] = useState({
     name: "",
     phone: "",
@@ -21,7 +22,7 @@ export default function InfoInput() {
     if (name === "" || phone === "") alert("데이터를 입력해주세요");
     else if (telRegex.test(phone)) {
       // 전화번호 형식이 맞다면
-      fetch(`http://localhost:8081/submit`, {
+      fetch(`http://localhost:8081/api/submit`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json; charset=utf-8",
@@ -35,6 +36,7 @@ export default function InfoInput() {
         .then((res) => {
           // res 값에 따른 결과처리
           console.log(res);
+          navigator('/scorerank');
         });
     } else {
       alert("전화번호를 (01012345678)형식으로 다시 입력해주세요!");
