@@ -12,6 +12,7 @@ import Chamcham from "./pages/Chamcham";
 import ChooseGame from "./pages/ChooseGame";
 import GameStartCham from "./pages/GameStartCham";
 import InfoInput from "./pages/InfoInput";
+import ScoreRank from "./pages/ScoreRank";
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
         <Route path="/startcham" element={<GameStartCham />} />
         <Route path="/choosegame" element={<ChooseGame />} />
         <Route path="/infoinput" element={<InfoInput />} />
+        <Route path="/scorerank" element={<ScoreRank />} />
       </Routes>
     </Router>
   );
