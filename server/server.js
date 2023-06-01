@@ -1,10 +1,12 @@
 const express = require("express");
 const app = express();
 const path = require("path");
+const cors = require('cors');
 let port = process.env.PORT || 8081;
 //  bodyparser 혹은 express.json을 설정해야 기본값 undefined가 바뀜
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 require("dotenv").config();
 const MongoClient = require("mongodb").MongoClient;
 
@@ -40,14 +42,13 @@ app.post("/api/submit", (req, res) => {
 });
 
 app.get("/api/scorerank", (req, res) => {
-  if (err) throw err;
-  let dbo = db.db("mydb");
   let mysort = { score: -1 }; //score를 기준으로 내림차순 정렬
-  dbo.collection("scores").find().sort(mysort).toArray(function(err, result) {
-    if (err) throw err;
-    console.log(result);
-    db.close();
+  db.collection("scores").find().sort(mysort).toArray(function(error, result) {
+    if (error) console.log(error);
+    // console.log(result);
+    res.send(result);
   });
+  // db.close();
 })
 
 // react router 연결
