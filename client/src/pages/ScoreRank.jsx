@@ -35,18 +35,23 @@ export default function ScoreRank() {
             </Text>
           </RankText>
           {/* 전화번호 형식 저장 */}
-          { done ? 
+          { data != undefined ?
             <ScoreBoxContainer>
+              {/* 1등출력 */}
               <Box>1ST&nbsp;&nbsp;<NameText>{data[0].name}</NameText>
                 <Text>{data[0].score}점</Text>
               </Box>
               <SmallBoxContainer>
-                <SmallBox>2ST {data[1].name}</SmallBox>
-                <SmallBox>3ST {data[2].name}</SmallBox>
-                <SmallBox>4ST {data[3].name}</SmallBox>
-                <SmallBox>5ST {data[4].name}</SmallBox>
+                {data.map((a, i)=>{
+                  return( // 2등부터 출력
+                    i>0 ? 
+                    <SmallBox>{i+1}ST {data[i].name}</SmallBox>
+                    : null
+                  )
+                })}
               </SmallBoxContainer>
-            </ScoreBoxContainer>: "데이터를 가져오는 중..."}
+            </ScoreBoxContainer> 
+            : "데이터를 가져오는 중..."}
         </ScoreContainer>
         <Alien2 />
       </Container>
