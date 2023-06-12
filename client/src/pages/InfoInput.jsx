@@ -5,6 +5,7 @@ import Frame from "../components/Frame";
 import styled from "styled-components";
 
 let score = 8500;
+let game = "proverb";
 export default function InfoInput() {
   const navigator = useNavigate();
   const [formdata, setformdata] = useState({
@@ -18,7 +19,6 @@ export default function InfoInput() {
     let telRegex = /\d{3}\d{4}\d{4}/;
     let name = formdata.name;
     let phone = formdata.phone;
-    console.log(name);
     if (name === "" || phone === "") alert("데이터를 입력해주세요");
     else if (telRegex.test(phone)) {
       // 전화번호 형식이 맞다면
@@ -27,17 +27,13 @@ export default function InfoInput() {
         headers: {
           "Content-Type": "application/json; charset=utf-8",
         },
-        body: JSON.stringify({name, phone, score}), //json형태로 보내야함
+        body: JSON.stringify({name, phone, score, game}), //json형태로 보내야함
       })
         .then((res) => {
           console.log(res);
+          window.location.assign('/scorerank');
           return res.json();
         })
-        .then((res) => {
-          // res 값에 따른 결과처리
-          console.log(res);
-          navigator('/scorerank');
-        });
     } else {
       alert("전화번호를 (01012345678)형식으로 다시 입력해주세요!");
     }
