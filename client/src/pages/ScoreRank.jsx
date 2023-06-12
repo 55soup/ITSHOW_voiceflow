@@ -48,6 +48,7 @@ export default function ScoreRank() {
               </SmallBoxContainer>
             </ScoreBoxContainer>: "데이터를 가져오는 중..."}
         </ScoreContainer>
+        <Alien2 />
       </Container>
       <Frame />
       <Background />
@@ -61,9 +62,9 @@ const Container = styled.div`
   position: absolute;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   overflow: hidden;
+  margin-top: 23vw;
   z-index: 100;
 `;
 
@@ -78,8 +79,7 @@ const Background = styled.div`
 const Alien = styled.div`
   width: 10rem;
   height: 10rem;
-  background-image: url("images/alien2.png");
-  background-repeat: no-repeat;
+  background: url("images/alien2.png") no-repeat;
 `;
 
 const BaseFlex = styled.div`
@@ -144,9 +144,9 @@ const SmallBox = styled(Box)`
   height: 10rem;
   font-size: 4rem;
 `
-
-const Button = styled.button`
-  font-size: 3rem;
-  background: transparent;
-  color: white;
-`;
+const Alien2 = styled.div`
+  width: 40rem;
+  height: 30rem;
+  margin-top: 5rem;
+  background: url('/images/alienScore.png') center/contain no-repeat;
+`
