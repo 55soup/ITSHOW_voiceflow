@@ -34,8 +34,8 @@ function Chamcham() {
 
   const handleTextChange = () => {
     const newText = `우주선의 운행 방식은 아래와 같다.
-										1. 대원의 몸을 화면에 인식.
-										2. 화면에 선택에 따라, 오른쪽, 왼쪽 방향에 따라 몸을 움직이면서 랜덤으로 이동하고 싶은 방향으로 이동`;
+										1. 대원의 얼굴을 화면에 인식.
+										2. 타이머에 맞춰, 오른쪽, 왼쪽 방향에 따라 몸을 움직이면서 랜덤으로 이동하고 싶은 방향으로 이동`;
     // 텍스트를 변경하는 함수
     setText(newText);
     setCount(count+1)
@@ -108,7 +108,7 @@ const TypingText = React.forwardRef(({ text }, ref) => {
   return (
     <div>
       {/* 텍스트가 출력될 곳 */}
-      <p className="text" style={{ fontSize: "2.8rem", padding: 65 }}>
+      <p className="text" style={{ fontSize: "3.3rem", padding: 45 }}>
         {Text}
       </p>
     </div>

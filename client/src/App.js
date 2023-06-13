@@ -13,6 +13,7 @@ import ChooseGame from "./pages/ChooseGame";
 import GameStartCham from "./pages/GameStartCham";
 import InfoInput from "./pages/InfoInput";
 import ScoreRank from "./pages/ScoreRank";
+import IntroCham from "./pages/IntroCham";
 
 const App = () => {
   return (
@@ -21,6 +22,7 @@ const App = () => {
         <Route path="/" element={<Main />} />
         <Route path="/proverb" element={<Proverb />} />
         <Route path="/chamcham" element={<Chamcham />} />
+        <Route path="/IntroCham" element={<IntroCham />} />
         <Route path="/Snack" element={<Snack />} />
         <Route path="/startcham" element={<GameStartCham />} />
         <Route path="/choosegame" element={<ChooseGame />} />

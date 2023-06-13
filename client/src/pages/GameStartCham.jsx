@@ -31,40 +31,71 @@ const CameraStyle = {
 };
 
 function Chamcham() {
-
   // 초기 텍스트 상태를 설정하는 useState 훅
   const [text, setText] = useState(
-    "미확인 물체 발견 !! 대원은 왼쪽과 오른쪽 중에 이동할 방향을 선택해 움직여라"
+    "미확인 물체 발견 !! 3초 안에 대원은 왼쪽과 오른쪽 중에 이동할 방향을 선택해 움직여라"
   );
-	  // timeLeft : 시작 3초 설정
-		const [timeLeft, setTimeLeft] = useState(3);
-		// 3초 간격
-		const timeRef = React.useRef(Date.now());
+  // 3초 타이머
+  const [timeLeft, setTimeLeft] = useState(3); //수정
+  const [timerStarted, setTimerStarted] = useState(false);
+  //6초 감소 시킬 timeRef
+  const timeRef = useRef(Date.now());
+  const hartcount = useState(3);
     // 컴퓨터 선택 방향 상태
     const [computerDirection, setComputerDirection] = useState("");
   
-    // 1초가 되면 정지되도록 코드 수정(3->2->1->0초에서 타이머 멈춤)
-    useEffect(() => {
-      const timeout = setTimeout(() => {
-        const interval = setInterval(() => {
-          setTimeLeft((prevTime) => {
-            if (prevTime === 1) {
-              clearInterval(interval); // 1초가 되면 인터벌 정지
-            }
-            return prevTime - 1;
-          });
-        }, 1000);
+    // // 1초가 되면 정지되도록 코드 수정(3->2->1->0초에서 타이머 멈춤)
+    // useEffect(() => {
+    //   const timeout = setTimeout(() => {
+    //     const interval = setInterval(() => {
+    //       setTimeLeft((prevTime) => {
+    //         if (prevTime === 1) {
+    //           clearInterval(interval); // 1초가 되면 인터벌 정지
+    //         }
+    //         return prevTime - 1;
+    //       });
+    //     }, 1000);
         
-        return () => {
-          clearInterval(interval);
-        };
-      }, 7000); // 3초 후에 인터벌 시작
+    //     return () => {
+    //       clearInterval(interval);
+    //     };
+    //   }, 7000); // 3초 후에 인터벌 시작
     
-      return () => {
-        clearTimeout(timeout);
-      };
-    }, []);
+    //   return () => {
+    //     clearTimeout(timeout);
+    //   };
+    // }, []);
+  // 타임에 맞추어 타이머 돌리기 
+  useEffect(() => {
+    if (timerStarted) {
+      const timeoutId = setTimeout(() => {
+        const intervalId = setInterval(() => {
+          setTimeLeft((prevTimeLeft) => {
+            const newTimeLeft = Math.max(0, prevTimeLeft - 0.3);
+            if (newTimeLeft === 0) {
+              clearInterval(intervalId);
+            }
+            return newTimeLeft;
+          });
+        }, 100);
     
+        return () => clearInterval(intervalId);
+      }, 3500);
+  
+      return () => clearTimeout(timeoutId);
+    }
+  }, [timerStarted]);
+  
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (hartcount > 0) {
+        setTimeLeft(3);
+        timeRef.current = Date.now();
+      }
+    }, 3500);
+  
+    return () => clearTimeout(timer);
+  }, []); // 두 번째 useEffect에서 timeLeft를 의존성으로 사용하지 않음  
 
   // useRef 훅을 사용하여 typingTextRef라는 변수 생성
   const typingTextRef = useRef(null);
@@ -187,6 +218,7 @@ function Chamcham() {
     return directions[randomIndex];
   };
 
+
   return (
     <div>
       <Container>
@@ -196,14 +228,14 @@ function Chamcham() {
         <Box>
           <TypingText text={text} ref={typingTextRef} />
         </Box>
-        <div style={{ position: 'relative' }}>
+        <div style={{ position: 'relative', left: -24}}>
 			    <video style={CameraStyle} ref={videoRef} onLoadedMetadata={detectFace} autoPlay muted />
 			    <canvas ref={canvasRef} style={{ position: 'absolute', top: 0, left: 0, width: 838, transform: "scaleX(-1)", marginLeft: "52px"}}/>
 		    </div>
         <Time>{Math.round(timeLeft)}</Time>
-        {/* <video style={videoStyle} autoPlay muted loop>
+        <video style={videoStyle} autoPlay muted loop>
           <source src="images/spacemotion.mp4" />
-        </video> */}
+        </video>
       </Container>
       <Frame color={"#000000"} />
     </div>
