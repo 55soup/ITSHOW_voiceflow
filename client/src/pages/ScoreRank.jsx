@@ -7,17 +7,19 @@ import styled from "styled-components";
 export default function ScoreRank() {
   const [data, setData] = useState();
   const [done, setDone] = useState(false);
+  const game = localStorage.getItem("game");
+
 
   useEffect(() => {
-    fetch(`http://localhost:8081/api/scorerank`).then(response => 
+    const query = new URLSearchParams({ game : game}).toString();
+    fetch(`http://localhost:8081/api/scorerank?${query}`)
+      .then(response => 
       response.json().then(data => ({
           scores: data,
           status: response.status
       })
     ).then(res => {
         setData(res.scores);
-        // console.log(data[0].name);
-        // console.log(data);
         setDone(true);
     }));
     }, []);

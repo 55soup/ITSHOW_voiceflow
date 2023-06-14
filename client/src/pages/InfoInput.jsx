@@ -1,13 +1,13 @@
 /* eslint-disable */
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Frame from "../components/Frame";
 import styled from "styled-components";
 
-let score = 8500;
-let game = "proverb";
 export default function InfoInput() {
   const navigator = useNavigate();
+  const score = localStorage.getItem("score"); // 점수를 가져옴
+  const game = localStorage.getItem("game"); // game종류를 가져옴
   const [formdata, setformdata] = useState({
     name: "",
     phone: "",
