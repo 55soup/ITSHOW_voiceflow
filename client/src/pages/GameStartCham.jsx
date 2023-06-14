@@ -44,43 +44,6 @@ function Chamcham() {
   // 컴퓨터 선택 방향 상태
   const [computerDirection, setComputerDirection] = useState("");
 
-  useEffect(() => {
-    let counts = 3;
-      const timeoutId = setTimeout(() => {
-        const intervalId = setInterval(() => {
-          setTimeLeft((prevTimeLeft) => {
-            if (prevTimeLeft === 1) {
-              // 컴퓨터 랜덤 방향 선택
-              const randomDirection = getRandomDirection();
-              setComputerDirection(randomDirection);
-              // 사용자가 움직인 방향과 컴퓨터가 선택한 방향 비교
-              if (randomDirection === userDirection) {
-                // 동일한 경우
-                console.log("동일한 방향입니다.");
-                console.log(randomDirection);
-                // TimeLeft 다시 실행
-                setTimeLeft(3);
-              } else {
-                // 다른 경우
-                console.log("다른 방향입니다.");
-                setHeartCount((hartcount) => hartcount - 1); // 틀릴 때마다 heartCount 감소
-                counts = counts-1;
-                console.log(counts)
-                if(counts > 0){
-                  setTimeLeft(3)
-                }else{
-                  clearInterval(intervalId);
-                  console.log("dssd")
-                }
-              }
-            }
-            return prevTimeLeft - 1;
-          });
-        }, 1000); //수정
-      }, 7000);
-      return () => clearTimeout(timeoutId);
-  }, [hartcount]);
-
     const userDirection = "right"; // 사용자가 왼쪽으로 움직였다고 가정
 
   // useRef 훅을 사용하여 typingTextRef라는 변수 생성
@@ -120,7 +83,23 @@ function Chamcham() {
       });
   };
 
-  //얼구을 감지하는 함수 
+  let intervalId; // setInterval 함수의 ID를 저장하기 위한 변수
+  const startTimer = () => {
+    // 타이머 시작
+    setTimeLeft(3); // 초기 타이머 값 설정
+    intervalId = setInterval(() => {
+      setTimeLeft((timeLeft) => {
+        if (timeLeft === 0) {
+          clearInterval(intervalId); // 기존 타이머 중단
+          return 3; // 타이머 재설정
+        } else {
+          return timeLeft - 1; // 타이머 감소
+        }
+      });
+    }, 1000); // 1초마다 감소
+  };
+  
+    //얼구을 감지하는 함수 
   const detectFace = async () => {
     // 비디오 요소와 캔버스 요소가 존재하는 경우 실행 
     if (videoRef.current && canvasRef.current) {
@@ -132,7 +111,7 @@ function Chamcham() {
       // 캔버스 크기를 비디오 크기에 맞게 조정 
       faceapi.matchDimensions(canvas, displaySize);
 
-      // 일정 간격으로 실행되는 인터벌 함수 
+    // 일정 간격으로 실행되는 인터벌 함수 
       setInterval(async () => {
         // 비디오에서 얼굴을 감지하고 얼굴 랜드마크 및 표정을 분석 
         const detections = await faceapi
@@ -159,29 +138,40 @@ function Chamcham() {
 
         //얼굴 방향을 가져옴 
         const faceDirection = getFaceDirection(resizedDetections);
-        // 얼굴 방향에 따라 콘솔창에 출력
-        if (faceDirection === 'left') {
-          console.log('오른쪽');
-          return "right";
-        } else if (faceDirection === 'right') {
-          console.log('왼쪽');
-          return "left"
-        }
-        //0.1초마다 인터벌 실행
-      }, 3000);
-    }
-  };
+        const randomDirection = getRandomDirection();
+        setComputerDirection(randomDirection);
+        // startTimer()
+      // 타이머가 0이 되었을 때 실행되는 코드
+      // if(timeLeft == 0){
+        if (faceDirection === userDirection) {
+              // 동일한 경우
+              console.log("동일한 방향입니다.");
+              console.log(faceDirection, randomDirection);
+              setTimeLeft(3);
+            } else {
+              // 다른 경우
+              console.log("다른 방향입니다.");
+              setHeartCount((hartcount) => hartcount - 1); // 틀릴 때마다 heartCount 감소
+              console.log(faceDirection, randomDirection);
+              if(hartcount > 0){
+                setTimeLeft(3)
+              }else{
+                // clearInterval(intervalId);
+                // 멈추게 해야 함. 
+              }
+            }
+          // }
+        }, 100); //setTimeout 시간 요기서 반복됨 
+          }
+        };
 
   const getFaceDirection = (detections) => {
     if (!detections || detections.length === 0) {
       return 'unknown';
     }
-
     const landmarks = detections[0].landmarks;
     const noseX = landmarks.getNose()[0].x;
-
     const movementDistance = Math.abs(noseX - previousNoseX);
-
     let faceDirection = 'unknown';
     const movementThreshold = 5;
     if (movementDistance > movementThreshold) {
@@ -190,18 +180,16 @@ function Chamcham() {
       } else if (noseX > previousNoseX) {
         faceDirection = 'right';
       }
-
       previousNoseX = noseX;
     }
-
     return faceDirection;
   };
+
   const getRandomDirection = () => {
     const directions = ["left", "right"];
     const randomIndex = Math.floor(Math.random() * directions.length);
     return directions[randomIndex];
   };
-
 
   return (
     <div>
