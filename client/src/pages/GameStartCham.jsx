@@ -31,40 +31,57 @@ const CameraStyle = {
 };
 
 function Chamcham() {
-
   // 초기 텍스트 상태를 설정하는 useState 훅
   const [text, setText] = useState(
-    "미확인 물체 발견 !! 대원은 왼쪽과 오른쪽 중에 이동할 방향을 선택해 움직여라"
+    `미확인 물체 발견 !! \n3초 안에 대원은 왼쪽과 오른쪽 중에 \n이동할 방향을 선택해 움직여라`
   );
-	  // timeLeft : 시작 3초 설정
-		const [timeLeft, setTimeLeft] = useState(3);
-		// 3초 간격
-		const timeRef = React.useRef(Date.now());
-    // 컴퓨터 선택 방향 상태
-    const [computerDirection, setComputerDirection] = useState("");
-  
-    // 1초가 되면 정지되도록 코드 수정(3->2->1->0초에서 타이머 멈춤)
-    useEffect(() => {
-      const timeout = setTimeout(() => {
-        const interval = setInterval(() => {
-          setTimeLeft((prevTime) => {
-            if (prevTime === 1) {
-              clearInterval(interval); // 1초가 되면 인터벌 정지
+  // 3초 타이머
+  const [timeLeft, setTimeLeft] = useState(3); //수정
+  const [timerStarted, setTimerStarted] = useState(false);
+  //6초 감소 시킬 timeRef
+  const timeRef = useRef(Date.now());
+  const [hartcount, setHeartCount] = useState(3);
+  // 컴퓨터 선택 방향 상태
+  const [computerDirection, setComputerDirection] = useState("");
+
+  useEffect(() => {
+    let counts = 3;
+      const timeoutId = setTimeout(() => {
+        const intervalId = setInterval(() => {
+          setTimeLeft((prevTimeLeft) => {
+            if (prevTimeLeft === 1) {
+              // 컴퓨터 랜덤 방향 선택
+              const randomDirection = getRandomDirection();
+              setComputerDirection(randomDirection);
+              // 사용자가 움직인 방향과 컴퓨터가 선택한 방향 비교
+              if (randomDirection === userDirection) {
+                // 동일한 경우
+                console.log("동일한 방향입니다.");
+                console.log(randomDirection);
+                // TimeLeft 다시 실행
+                setTimeLeft(3);
+              } else {
+                // 다른 경우
+                console.log("다른 방향입니다.");
+                setHeartCount((hartcount) => hartcount - 1); // 틀릴 때마다 heartCount 감소
+                counts = counts-1;
+                console.log(counts)
+                if(counts > 0){
+                  setTimeLeft(3)
+                }else{
+                  clearInterval(intervalId);
+                  console.log("dssd")
+                }
+              }
             }
-            return prevTime - 1;
+            return prevTimeLeft - 1;
           });
-        }, 1000);
-        
-        return () => {
-          clearInterval(interval);
-        };
-      }, 7000); // 3초 후에 인터벌 시작
-    
-      return () => {
-        clearTimeout(timeout);
-      };
-    }, []);
-    
+        }, 1000); //수정
+      }, 7000);
+      return () => clearTimeout(timeoutId);
+  }, [hartcount]);
+
+    const userDirection = "right"; // 사용자가 왼쪽으로 움직였다고 가정
 
   // useRef 훅을 사용하여 typingTextRef라는 변수 생성
   const typingTextRef = useRef(null);
@@ -72,8 +89,6 @@ function Chamcham() {
   const handleTextChange = (text) => {
     // 텍스트를 변경하는 함수
     setText('ㅇ');
-    // typingTextRef의 resetTyping 함수 호출
-    // // typingTextRef의 resetTyping 함수 호출
     typingTextRef.current.resetTyping();
   };
   const videoRef = useRef(null);
@@ -187,23 +202,31 @@ function Chamcham() {
     return directions[randomIndex];
   };
 
+
   return (
     <div>
       <Container>
-        <Heart />
-        <Heart style={{ left: 244 }} />
-        <Heart style={{ left: 320 }} />
+      {hartcount >= 1 && <Heart />}
+      {hartcount >= 2 && <Heart style={{ left: 244 }} />}
+      {hartcount >= 3 && <Heart style={{ left: 320 }} />}
         <Box>
           <TypingText text={text} ref={typingTextRef} />
         </Box>
-        <div style={{ position: 'relative' }}>
+        {hartcount == 0 &&
+        <Box2>  
+          대원, 덕분에 무사히 <br/>
+          우주선을 보호할 수 있었어요 ! <br />
+          대원의 점수는 {} 입니다.
+        </Box2>
+        }
+        <div style={{ position: 'relative', left: -24}}>
 			    <video style={CameraStyle} ref={videoRef} onLoadedMetadata={detectFace} autoPlay muted />
 			    <canvas ref={canvasRef} style={{ position: 'absolute', top: 0, left: 0, width: 838, transform: "scaleX(-1)", marginLeft: "52px"}}/>
 		    </div>
         <Time>{Math.round(timeLeft)}</Time>
-        {/* <video style={videoStyle} autoPlay muted loop>
+        <video style={videoStyle} autoPlay muted loop>
           <source src="images/spacemotion.mp4" />
-        </video> */}
+        </video>
       </Container>
       <Frame color={"#000000"} />
     </div>
@@ -312,9 +335,26 @@ top: 619px;
 color: #000000;
 font-style: normal;
 font-weight: 400;
-font-size: 140px;
+font-size: 160px;
 line-height: 140px;
 left: 450px;
+`
+const Box2 = styled.div`
+position: absolute;
+width: 728px;
+height: 538px;
+left: 158px;
+top: 340px;
+background-color: white;
+color: black;
+display: flex;
+justify-content: center;
+align-items: center;
+margin: 0 auto;
+font-size: 40px;
+font-weight: 400;
+z-index: 999;
+padding: 20px;
 `
 
 export default Chamcham;

@@ -13,10 +13,8 @@ const Container = styled.div`
   width: 100%;
   height: 100%;
   /* background-image: url(process.env.PUBLIC_URL+"frame.png") */
-  background-image: url("images/frame.png");
+  background: url("images/frame.png") center / cover no-repeat;
   position: absolute;
-  background-size: cover;
-  background-repeat: no-repeat;
   z-index: 1;
 `;
 

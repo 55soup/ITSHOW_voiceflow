@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import Frame from "../components/Frame";
 import styled from "styled-components";
 
+let score = 8500;
+let game = "proverb";
 export default function InfoInput() {
   const navigator = useNavigate();
   const [formdata, setformdata] = useState({
@@ -17,8 +19,6 @@ export default function InfoInput() {
     let telRegex = /\d{3}\d{4}\d{4}/;
     let name = formdata.name;
     let phone = formdata.phone;
-    let score = 500;
-    console.log(name);
     if (name === "" || phone === "") alert("데이터를 입력해주세요");
     else if (telRegex.test(phone)) {
       // 전화번호 형식이 맞다면
@@ -27,17 +27,13 @@ export default function InfoInput() {
         headers: {
           "Content-Type": "application/json; charset=utf-8",
         },
-        body: JSON.stringify({name, phone, score}),
+        body: JSON.stringify({name, phone, score, game}), //json형태로 보내야함
       })
         .then((res) => {
           console.log(res);
+          window.location.assign('/scorerank');
           return res.json();
         })
-        .then((res) => {
-          // res 값에 따른 결과처리
-          console.log(res);
-          navigator('/scorerank');
-        });
     } else {
       alert("전화번호를 (01012345678)형식으로 다시 입력해주세요!");
     }
@@ -55,16 +51,17 @@ export default function InfoInput() {
         <Alien />
         <ScoreContainer>
           <Text>score</Text>
-          <ScoreText>1855점</ScoreText>
+          <ScoreText>{score}점</ScoreText>
           <Text style={{ fontSize: "3rem", marginTop: "3rem" }}>
             각 게임에 1등 하신분은 기프티콘을 드려요!
           </Text>
           {/* <Form action="/submit" method="POST"> */}
           <Form>
             <Input
-              placeholder="이름입력"
+              placeholder="이름입력 (10글자 이내)"
               name="name"
               onChange={onChangeInput}
+              maxLength='10'
               required
             />
             {/* 전화번호 형식 저장 */}
@@ -74,12 +71,12 @@ export default function InfoInput() {
               onChange={onChangeInput}
               required
             />
-            <div>
+            <BtnContainer>
               <Button>스킵</Button>
               <Button type="submit" onClick={handleSubmit}>
                 제출
               </Button>
-            </div>
+            </BtnContainer>
           </Form>
         </ScoreContainer>
       </Container>
@@ -92,10 +89,10 @@ export default function InfoInput() {
 const Container = styled.div`
   width: 100%;
   height: 100vh;
+  margin-top: 23vw;
   position: absolute;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   overflow: hidden;
   z-index: 100;
@@ -104,9 +101,7 @@ const Container = styled.div`
 const Background = styled.div`
   width: 100%;
   height: 100vh;
-  background-image: url("images/infoInputBack.png");
-  background-repeat: no-repeat;
-  background-size: cover;
+  background: url("images/infoInputBack.png") center/cover no-repeat;
 `;
 
 const Alien = styled.div`
@@ -158,4 +153,11 @@ const Button = styled.button`
   font-size: 3rem;
   background: transparent;
   color: white;
+  padding: 1rem;
 `;
+const BtnContainer = styled.div`
+  margin-top: 2rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 2rem;
+`

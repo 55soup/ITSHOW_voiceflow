@@ -32,7 +32,7 @@ MongoClient.connect(
 // 점수 제출
 app.post("/api/submit", (req, res) => {
   db.collection("scores").insertOne(
-    { name: req.body.name, phone: req.body.phone, score: req.body.score },
+    { name: req.body.name, phone: req.body.phone, score: req.body.score, game: req.body.game},
     (error, result) => {
       res.redirect("/");
       console.log("저장완료");
@@ -43,9 +43,10 @@ app.post("/api/submit", (req, res) => {
 
 app.get("/api/scorerank", (req, res) => {
   let mysort = { score: -1 }; //score를 기준으로 내림차순 정렬
-  db.collection("scores").find().sort(mysort).toArray(function(error, result) {
+  let game = "proverb"
+  db.collection("scores").find( { "game": { $eq: "proverb" } } ).sort(mysort).toArray(function(error, result) {
     if (error) console.log(error);
-    // console.log(result);
+    console.log(result);
     res.send(result);
   });
   // db.close();
