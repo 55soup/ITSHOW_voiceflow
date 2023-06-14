@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useSpeechRecognition } from "react-speech-kit";
 import styled from "styled-components";
 import Main from "./pages/Main";
+import GameStartProverb from "./pages/GameStartProverb";
 import Proverb from "./pages/Proverb";
 import Snack from "./pages/Snack";
 import Frame from "./components/Frame";
@@ -20,6 +21,7 @@ const App = () => {
     <Router>
       <Routes>
         <Route path="/" element={<Main />} />
+        <Route path="/startproverb" element={<GameStartProverb />} />
         <Route path="/proverb" element={<Proverb />} />
         <Route path="/chamcham" element={<Chamcham />} />
         <Route path="/IntroCham" element={<IntroCham />} />
