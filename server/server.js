@@ -43,10 +43,9 @@ app.post("/api/submit", (req, res) => {
 
 app.get("/api/scorerank", (req, res) => {
   let mysort = { score: -1 }; //score를 기준으로 내림차순 정렬
-  let game = "proverb"
-  db.collection("scores").find( { "game": { $eq: "proverb" } } ).sort(mysort).toArray(function(error, result) {
+  let game = req.query.game;
+  db.collection("scores").find( { "game": { $eq: game } } ).sort(mysort).toArray(function(error, result) {
     if (error) console.log(error);
-    console.log(result);
     res.send(result);
   });
   // db.close();
