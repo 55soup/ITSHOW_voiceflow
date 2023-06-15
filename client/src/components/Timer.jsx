@@ -22,18 +22,19 @@ const Timer = (props) => {
 
     useEffect(() => {
         if (time < 0) {
-            alert("Time OVER!");
-            navigate("/infoinput", { score: props.count});
+            alert(`Time OVER! 당신의 점수는? ${props.score}`);
+            localStorage.setItem("score", props.score);
+            localStorage.setItem("game", "proverb");
+            navigate("/infoinput");
         }
     }, [time]);
 
     return (
         <div style={{color: 'white'}}>
-            <h1 style={{fontSize: "3.5rem"}}>남은 시간</h1>
             <div>
-                <span style={{fontSize: '5rem'}}>{parseInt(time / 60)}</span>
-                <span style={{fontSize: '5rem'}}> : </span>
-                <span style={{fontSize: '5rem'}}>{getSeconds(time)}</span>
+                <span style={{fontSize: '10rem'}}>{parseInt(time / 60)}</span>
+                <span style={{fontSize: '10rem'}}> : </span>
+                <span style={{fontSize: '10rem'}}>{getSeconds(time)}</span>
             </div>
         </div>
     );

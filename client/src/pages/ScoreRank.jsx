@@ -8,6 +8,7 @@ export default function ScoreRank() {
   const [data, setData] = useState();
   const [done, setDone] = useState(false);
   const game = localStorage.getItem("game");
+  const score = localStorage.getItem("score");
 
 
   useEffect(() => {
@@ -21,17 +22,35 @@ export default function ScoreRank() {
     ).then(res => {
         setData(res.scores);
         setDone(true);
+        console.log(data);
+        // getRank();
     }));
     }, []);
 
+    const gameName={
+      "proverb" : "속담 이어말하기",
+      "chamcham" : "잘 피해라 참참참",
+      "snack" : "냠냠쩝쩝 과자이름 맞추기",
+    };
+
+    const getRank = () => {
+        for(let a in data){
+          console.log(a);
+          if(data[a].score===score){
+            return a
+          }
+        }
+    }
   return (
     <>
       <Container>
         <Alien />
         <ScoreContainer>
           <RankText>
-            <Text>잘 피해라 참참참!</Text>
-            <H1Text>RANK</H1Text>
+            <Text>{gameName[game]}</Text>
+            {/* {done ? <Text>당신의 등수는? {data.includes(score)}</Text> : null} */}
+            {/* {done ? <H1Text>YOUR RANK {getRank()+1}등</H1Text> : null} */}
+            {done ? <H1Text>RANK</H1Text> : null}
             <Text style={{ fontSize: "3rem", marginTop: "3rem" }}>
               각 게임에 1등 하신분은 기프티콘을 드려요!
             </Text>
@@ -43,15 +62,15 @@ export default function ScoreRank() {
               <Box>1ST&nbsp;&nbsp;<NameText>{data[0].name}</NameText>
                 <Text>{data[0].score}점</Text>
               </Box>
-              <SmallBoxContainer>
+                <SmallBoxContainer>
                 {data.map((a, i)=>{
                   return( // 2등부터 출력
-                    i>0 ? 
+                    i>0 && i<5?
                     <SmallBox>{i+1}ST {data[i].name}</SmallBox>
                     : null
                   )
                 })}
-              </SmallBoxContainer>
+                </SmallBoxContainer>
             </ScoreBoxContainer> 
             : "데이터를 가져오는 중..."}
         </ScoreContainer>
@@ -117,7 +136,7 @@ const Text = styled.label`
 `;
 
 const H1Text = styled(Text)`
-  font-size: 10rem;
+  font-size: 8rem;
 `;
 
 const NameText = styled(Text)`
