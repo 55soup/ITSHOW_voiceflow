@@ -3,7 +3,6 @@ import Frame from "../components/Frame";
 import styled from "styled-components";
 import * as faceapi from 'face-api.js';
 import { useNavigate } from "react-router-dom";
-
 // 비디오 스타일을 정의한 객체
 const videoStyle = {
   display: "flex",
@@ -18,7 +17,6 @@ const videoStyle = {
   left: "4px",
   top: "1184px"
 };
-
 // 비디오 스타일을 정의한 객체
 const CameraStyle = {
   display: "flex",
@@ -29,7 +27,6 @@ const CameraStyle = {
   transform: "scaleX(-1)", // 좌우 반전을 적용하는 부분
   marginLeft: "52px",
 };
-
 function Chamcham() {
   // 초기 텍스트 상태를 설정하는 useState 훅
   const [text, setText] = useState(
@@ -37,7 +34,6 @@ function Chamcham() {
   );
   // 3초 타이머
   const [timeLeft, setTimeLeft] = useState(3); //수정
-  const [timerStarted, setTimerStarted] = useState(false);
   //6초 감소 시킬 timeRef
   const timeRef = useRef(Date.now());
   const [hartcount, setHeartCount] = useState(3);
@@ -46,43 +42,43 @@ function Chamcham() {
 
   useEffect(() => {
     let counts = 3;
-      const timeoutId = setTimeout(() => {
-        const intervalId = setInterval(() => {
-          setTimeLeft((prevTimeLeft) => {
-            if (prevTimeLeft === 1) {
-              // 컴퓨터 랜덤 방향 선택
-              const randomDirection = getRandomDirection();
-              setComputerDirection(randomDirection);
-              // 사용자가 움직인 방향과 컴퓨터가 선택한 방향 비교
-              if (randomDirection === userDirection) {
-                // 동일한 경우
-                console.log("동일한 방향입니다.");
-                console.log(randomDirection);
-                // TimeLeft 다시 실행
+    const timeoutId = setTimeout(() => {
+      const intervalId = setInterval(() => {
+        const userDirection = detectFace();
+        setTimeLeft((prevTimeLeft) => {
+          if (prevTimeLeft <= 1) {
+            // 컴퓨터 랜덤 방향 선택
+            const randomDirection = getRandomDirection();
+            setComputerDirection(randomDirection);
+            // 사용자가 움직인 방향과 컴퓨터가 선택한 방향 비교
+            if (randomDirection === userDirection) {
+              // 동일한 경우
+              console.log("동일한 방향입니다.");
+              console.log(randomDirection, userDirection);
+              // TimeLeft 다시 실행
+              setTimeLeft(3);
+            } else {
+              // 다른 경우
+              console.log("다른 방향입니다.", userDirection);
+              setHeartCount((heartcount) => heartcount - 1); // 틀릴 때마다 heartCount 감소
+              counts = counts - 1;
+              console.log(counts);
+              if (counts > 0) {
                 setTimeLeft(3);
               } else {
-                // 다른 경우
-                console.log("다른 방향입니다.");
-                setHeartCount((hartcount) => hartcount - 1); // 틀릴 때마다 heartCount 감소
-                counts = counts-1;
-                console.log(counts)
-                if(counts > 0){
-                  setTimeLeft(3)
-                }else{
-                  clearInterval(intervalId);
-                  console.log("dssd")
-                }
+                clearInterval(intervalId);
+                console.log("dssd");
               }
             }
-            return prevTimeLeft - 1;
-          });
-        }, 1000); //수정
-      }, 7000);
-      return () => clearTimeout(timeoutId);
+            return 3;
+          }
+          return prevTimeLeft - 1;
+        });
+      }, 1000); //수정
+    }, 8000);
+    return () => clearTimeout(timeoutId);
   }, [hartcount]);
-
-    const userDirection = "right"; // 사용자가 왼쪽으로 움직였다고 가정
-
+  
   // useRef 훅을 사용하여 typingTextRef라는 변수 생성
   const typingTextRef = useRef(null);
 
@@ -168,7 +164,7 @@ function Chamcham() {
           return "left"
         }
         //0.1초마다 인터벌 실행
-      }, 3000);
+      }, 100);
     }
   };
 

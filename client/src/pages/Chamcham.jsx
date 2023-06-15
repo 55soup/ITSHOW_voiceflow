@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import Frame from "../components/Frame";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-
 // 비디오 스타일을 정의한 객체
 const videoStyle = {
   width: "838px",
@@ -24,7 +23,7 @@ function Chamcham() {
 
   // 초기 텍스트 상태를 설정하는 useState 훅
   const [text, setText] = useState(
-    "오류..발생 ... 오류 발..zz 생 현재 비확인 물체가 뿜어낸 전자파로 인해 우주선 운행 프로그램에 오류가 발생했다. 대원들은 신속하게 수동으로 우주선을 조종해 비확인 물체로부터 우주선을 보호해라."
+    `오류..발생 ... 오류 발..zz 생..  \n 현재 비확인 물체가 뿜어낸 전자파로 인해 우주선 운행 프로그램에 오류가 발생했다.\n 대원들은 신속하게 수동으로 우주선을 조종해 비확인 물체로부터 우주선을 보호해라.`
   );
 
   const [count, setCount] = useState(0);
@@ -33,9 +32,10 @@ function Chamcham() {
   const typingTextRef = useRef(null);
 
   const handleTextChange = () => {
-    const newText = `우주선의 운행 방식은 아래와 같다.
-										1. 대원의 얼굴을 화면에 인식.
-										2. 타이머에 맞춰, 오른쪽, 왼쪽 방향에 따라 몸을 움직이면서 랜덤으로 이동하고 싶은 방향으로 이동`;
+    const newText = `우주선의 운행 방식은 아래와 같다.\n
+										1. 대원의 얼굴을 화면에 인식.\n
+										2. 3초마다, 오른쪽, 왼쪽 방향으로 \n
+                    얼굴을 움직이면서, 랜덤으로 이동하고 싶은 방향으로 이동`;
     // 텍스트를 변경하는 함수
     setText(newText);
     setCount(count+1)
@@ -108,7 +108,7 @@ const TypingText = React.forwardRef(({ text }, ref) => {
   return (
     <div>
       {/* 텍스트가 출력될 곳 */}
-      <p className="text" style={{ fontSize: "3.3rem", padding: 45 }}>
+      <p className="text" style={{ fontSize: "3.2rem", padding: 35, whiteSpace: 'pre-line' }}>
         {Text}
       </p>
     </div>
