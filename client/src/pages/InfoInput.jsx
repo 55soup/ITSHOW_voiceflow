@@ -72,7 +72,14 @@ export default function InfoInput() {
               required
             />
             <BtnContainer>
-              <Button>스킵</Button>
+              <Button onClick={()=>{
+                 if (!confirm("정말 입력하지 않겠습니까? (각 게임에 1등 하신 분은 기프티콘을 드립니다)")) {
+                  
+                } else {
+                  alert("메인화면으로 이동합니다.")
+                  navigator("/");
+                }
+              }}>입력안함</Button>
               <Button type="submit" onClick={handleSubmit}>
                 제출
               </Button>
