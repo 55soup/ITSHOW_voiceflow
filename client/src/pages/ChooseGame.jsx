@@ -8,7 +8,7 @@ function ChooseGame() {
   const [gameIdx, setGameIdx] = useState(0);
   const gameTitle = [
     { text: "속담 이어말하기", url: "proverb" },
-    { text: "직접 움직여라참참참!", url: "chamcham" },
+    { text: "직접 움직여라참참참!", url: "introcham" },
     { text: "냠냠쩝쩝 과자이름 맞추기", url: "snack" },
   ];
   return (
