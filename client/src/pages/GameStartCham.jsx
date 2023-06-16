@@ -42,36 +42,46 @@ function Chamcham() {
   // 컴퓨터 선택 방향 상태
   const [computerDirection, setComputerDirection] = useState("");
   const [userDirection, setUserDirection] = useState("");
+  const [score, setScore] = useState(0)
+  const [timerStart, setTimerStart] = useState(false)
   const navigate = useNavigate();
-  const [score, setScore] = useState(null)
+  
+  useEffect(() => {
+    console.log(timerStart)
+  }, [timerStart])
 
   // 컴포넌트가 처음 렌더링될 때 얼굴 방향을 감지하고 `userDirection` 상태를 설정합니다.
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      setTimeLeft((prevTimeLeft) => {
-        if (prevTimeLeft === 1 && hartcount != 0) {
-          const randomDirection = getRandomDirection();
-          if (userDirection === randomDirection) {
-            console.log("같음", userDirection, randomDirection);
-            setScore((score) => score + 10)
-          } else {
-            console.log("다름", userDirection, randomDirection);
-            setHeartCount((heartcount) => heartcount - 1); // 틀릴 때마다 heartCount 감소
-            if (hartcount > 0) {
-              timeLeft = 3;
+    let intervalId;
+    if(timerStart) {
+      let timeLeft = 3;
+        intervalId = setInterval(() => {
+        setTimeLeft((prevTimeLeft) => {
+          if (prevTimeLeft === 1 && hartcount > 0) {
+            const randomDirection = getRandomDirection();
+            if (userDirection === randomDirection) {
+              console.log("같음", userDirection, randomDirection);
+              setScore((data) => data + 10)
             } else {
-              clearInterval(intervalId);
-              console.log("dssd");
+              console.log("다름", userDirection, randomDirection);
+              setHeartCount((heartcount) => heartcount - 1); // 틀릴 때마다 heartCount 감소
+              if (hartcount > 0) {
+                timeLeft = 3;
+              } else {
+                clearInterval(intervalId);
+                console.log("dssd");
+              }
             }
           }
-        }
-        return prevTimeLeft === 1 ? 3 : prevTimeLeft - 1;
-      });
-    }, 1000);
+          return prevTimeLeft === 1 ? 3 : prevTimeLeft - 1;
+        });
+      }, 1000);
+    }
+    
     return () => {
       clearInterval(intervalId);
     };
-  }, [userDirection]);  
+  }, [timerStart, userDirection]);  
   
   // useRef 훅을 사용하여 typingTextRef라는 변수 생성
   const typingTextRef = useRef(null);
@@ -134,7 +144,6 @@ function Chamcham() {
     return faceDirection;
   };
 
-  
   //얼구을 감지하는 함수 
   const detectFace = async () => {
     // 비디오 요소와 캔버스 요소가 존재하는 경우 실행 
@@ -189,7 +198,7 @@ function Chamcham() {
   if(hartcount == -1) {
     alert(`Time OVER! 당신의 점수는? ${score}`);
     localStorage.setItem("score", score);
-    localStorage.setItem("game", "chamcham");
+    localStorage.setItem("game", "cham");
     navigate("/infoinput");
   }
 
@@ -211,7 +220,7 @@ function Chamcham() {
       {hartcount >= 3 && <Heart style={{ left: 320 }} />}
         <Box>
         {hartcount > 0 &&
-          <TypingText text={text} ref={typingTextRef} />
+          <TypingText text={text} ref={typingTextRef} onTypingComplete={() => setTimerStart(true)} />
         } 
         {hartcount <= 0 &&
           <div style={{fontSize: 40}}>우하하하 여기는 우리가 접수하겠다. </div>
@@ -248,7 +257,7 @@ function Chamcham() {
 }
 
 // 타이핑 효과 
-const TypingText = React.forwardRef(({ text }, ref) => {
+const TypingText = React.forwardRef(({ text, onTypingComplete }, ref ) => {
   // Text 상태 변수를 생성하고 초기값을 빈 문자열로 설정
   const [Text, setText] = useState("");
   // Count 상태 변수를 생성하고 초기값을 0으로 설정
@@ -269,6 +278,7 @@ const TypingText = React.forwardRef(({ text }, ref) => {
     if (Count === text.length) {
       // 인터벌 함수를 중지시킴
       clearInterval(interval);
+      onTypingComplete();
     }
 
     // 컴포넌트가 사라질 때 인터벌 함수를 정리(cleanup)
