@@ -5,7 +5,7 @@ import * as faceapi from 'face-api.js';
 import Timer from "../components/Timer";
 import { useNavigate } from "react-router-dom";
 
-// 비디오 스타일을 정의한 객체
+// 비디오 스타일을 정의한 객체  
 const videoStyle = {
   display: "flex",
   justifyContent: "center",
