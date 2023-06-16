@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import Frame from "../components/Frame";
 import styled from "styled-components";
 import * as faceapi from 'face-api.js';
+import Timer from "../components/Timer";
 import { useNavigate } from "react-router-dom";
+
 // 비디오 스타일을 정의한 객체
 const videoStyle = {
   display: "flex",
@@ -15,7 +17,7 @@ const videoStyle = {
   width: "838px",
   height: "621px",
   left: "4px",
-  top: "1184px"
+  top: "1169px"
 };
 // 비디오 스타일을 정의한 객체
 const CameraStyle = {
@@ -39,45 +41,37 @@ function Chamcham() {
   const [hartcount, setHeartCount] = useState(3);
   // 컴퓨터 선택 방향 상태
   const [computerDirection, setComputerDirection] = useState("");
+  const [userDirection, setUserDirection] = useState("");
+  const navigate = useNavigate();
+  const [score, setScore] = useState(null)
 
+  // 컴포넌트가 처음 렌더링될 때 얼굴 방향을 감지하고 `userDirection` 상태를 설정합니다.
   useEffect(() => {
-    let counts = 3;
-    const timeoutId = setTimeout(() => {
-      const intervalId = setInterval(() => {
-        const userDirection = detectFace();
-        setTimeLeft((prevTimeLeft) => {
-          if (prevTimeLeft <= 1) {
-            // 컴퓨터 랜덤 방향 선택
-            const randomDirection = getRandomDirection();
-            setComputerDirection(randomDirection);
-            // 사용자가 움직인 방향과 컴퓨터가 선택한 방향 비교
-            if (randomDirection === userDirection) {
-              // 동일한 경우
-              console.log("동일한 방향입니다.");
-              console.log(randomDirection, userDirection);
-              // TimeLeft 다시 실행
-              setTimeLeft(3);
+    const intervalId = setInterval(() => {
+      setTimeLeft((prevTimeLeft) => {
+        if (prevTimeLeft === 1 && hartcount != 0) {
+          const randomDirection = getRandomDirection();
+          if (userDirection === randomDirection) {
+            console.log("같음", userDirection, randomDirection);
+            setScore((score) => score + 10)
+          } else {
+            console.log("다름", userDirection, randomDirection);
+            setHeartCount((heartcount) => heartcount - 1); // 틀릴 때마다 heartCount 감소
+            if (hartcount > 0) {
+              timeLeft = 3;
             } else {
-              // 다른 경우
-              console.log("다른 방향입니다.", userDirection);
-              setHeartCount((heartcount) => heartcount - 1); // 틀릴 때마다 heartCount 감소
-              counts = counts - 1;
-              console.log(counts);
-              if (counts > 0) {
-                setTimeLeft(3);
-              } else {
-                clearInterval(intervalId);
-                console.log("dssd");
-              }
+              clearInterval(intervalId);
+              console.log("dssd");
             }
-            return 3;
           }
-          return prevTimeLeft - 1;
-        });
-      }, 1000); //수정
-    }, 8000);
-    return () => clearTimeout(timeoutId);
-  }, [hartcount]);
+        }
+        return prevTimeLeft === 1 ? 3 : prevTimeLeft - 1;
+      });
+    }, 1000);
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [userDirection]);  
   
   // useRef 훅을 사용하여 typingTextRef라는 변수 생성
   const typingTextRef = useRef(null);
@@ -116,6 +110,31 @@ function Chamcham() {
       });
   };
 
+  const getFaceDirection = (detections) => {
+    if (!detections || detections.length === 0) {
+      return 'unknown';
+    }
+
+    const landmarks = detections[0].landmarks;
+    const noseX = landmarks.getNose()[0].x;
+
+    const movementDistance = Math.abs(noseX - previousNoseX);
+
+    let faceDirection = 'unknown';
+    const movementThreshold = 5;
+    if (movementDistance > movementThreshold) {
+      if (noseX < previousNoseX) {
+        faceDirection = 'left';
+      } else if (noseX > previousNoseX) {
+        faceDirection = 'right';
+      }
+
+      previousNoseX = noseX;
+    }
+    return faceDirection;
+  };
+
+  
   //얼구을 감지하는 함수 
   const detectFace = async () => {
     // 비디오 요소와 캔버스 요소가 존재하는 경우 실행 
@@ -152,15 +171,14 @@ function Chamcham() {
         };
         //얼굴 랜드마크 캔버스에 그림 
         faceapi.draw.drawFaceLandmarks(canvas, resizedDetections, drawOptions);
-
         //얼굴 방향을 가져옴 
         const faceDirection = getFaceDirection(resizedDetections);
         // 얼굴 방향에 따라 콘솔창에 출력
         if (faceDirection === 'left') {
-          console.log('오른쪽');
+          setUserDirection("right")
           return "right";
         } else if (faceDirection === 'right') {
-          console.log('왼쪽');
+          setUserDirection("left")
           return "left"
         }
         //0.1초마다 인터벌 실행
@@ -168,30 +186,13 @@ function Chamcham() {
     }
   };
 
-  const getFaceDirection = (detections) => {
-    if (!detections || detections.length === 0) {
-      return 'unknown';
-    }
+  if(hartcount == -1) {
+    alert(`Time OVER! 당신의 점수는? ${score}`);
+    localStorage.setItem("score", score);
+    localStorage.setItem("game", "chamcham");
+    navigate("/infoinput");
+  }
 
-    const landmarks = detections[0].landmarks;
-    const noseX = landmarks.getNose()[0].x;
-
-    const movementDistance = Math.abs(noseX - previousNoseX);
-
-    let faceDirection = 'unknown';
-    const movementThreshold = 5;
-    if (movementDistance > movementThreshold) {
-      if (noseX < previousNoseX) {
-        faceDirection = 'left';
-      } else if (noseX > previousNoseX) {
-        faceDirection = 'right';
-      }
-
-      previousNoseX = noseX;
-    }
-
-    return faceDirection;
-  };
   const getRandomDirection = () => {
     const directions = ["left", "right"];
     const randomIndex = Math.floor(Math.random() * directions.length);
@@ -202,24 +203,41 @@ function Chamcham() {
   return (
     <div>
       <Container>
+        <div style={{position: 'absolute',top: '194px',fontSize: '20px', left: 493}}>
+        <Timer count={30}/>
+        </div>
       {hartcount >= 1 && <Heart />}
       {hartcount >= 2 && <Heart style={{ left: 244 }} />}
       {hartcount >= 3 && <Heart style={{ left: 320 }} />}
         <Box>
+        {hartcount > 0 &&
           <TypingText text={text} ref={typingTextRef} />
+        } 
+        {hartcount <= 0 &&
+          <div style={{fontSize: 40}}>우하하하 여기는 우리가 접수하겠다. </div>
+        } 
         </Box>
-        {hartcount == 0 &&
-        <Box2>  
-          대원, 덕분에 무사히 <br/>
-          우주선을 보호할 수 있었어요 ! <br />
-          대원의 점수는 {} 입니다.
-        </Box2>
+        {hartcount <= 0 &&
+        // <Box2>  
+        //   대원, 덕분에 무사히 <br/>
+        //   우주선을 보호할 수 있었어요 ! <br />
+        //   대원의 점수는 {} 입니다.
+        // </Box2>
+        <div>
+          <Alien></Alien>
+          <Alien style={{top: 800, left: 150, width: 305, height: 305}}></Alien>
+          <Alien style={{top: 747, left: 716, width: 213, height: 213}}></Alien>
+        </div>
         }
-        <div style={{ position: 'relative', left: -24}}>
-			    <video style={CameraStyle} ref={videoRef} onLoadedMetadata={detectFace} autoPlay muted />
-			    <canvas ref={canvasRef} style={{ position: 'absolute', top: 0, left: 0, width: 838, transform: "scaleX(-1)", marginLeft: "52px"}}/>
-		    </div>
+        {hartcount > 0 &&
+          <div style={{ position: 'relative', left: -24}}>
+            <video style={CameraStyle} ref={videoRef} onLoadedMetadata={detectFace} autoPlay muted />
+            <canvas ref={canvasRef} style={{ position: 'absolute', top: 0, left: 0, width: 838, transform: "scaleX(-1)", marginLeft: "52px"}}/>
+          </div>
+      }
+      {hartcount > 0 &&
         <Time>{Math.round(timeLeft)}</Time>
+      }
         <video style={videoStyle} autoPlay muted loop>
           <source src="images/spacemotion.mp4" />
         </video>
@@ -279,7 +297,15 @@ const TypingText = React.forwardRef(({ text }, ref) => {
     </div>
   );
 });
-
+const Alien = styled.div`
+  background-image: url(images/alien.png);
+  background-size: cover;
+  position: absolute;
+  width: 452px;
+  height: 388px;
+  left: 300px;
+  top: 482px;
+`
 const Heart = styled.div`
   position: absolute;
   background-size: cover;

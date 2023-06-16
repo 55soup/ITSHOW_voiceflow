@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Frame from "../components/Frame";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import { hover } from "@testing-library/user-event/dist/hover";
 
 // 비디오 스타일을 정의한 객체
 const videoStyle = {
@@ -15,30 +16,70 @@ const videoStyle = {
 };
 
 function Chamcham() {
-
   // useNavigate 훅을 사용하여 navigate 함수를 받아옴
   const navigate = useNavigate();
-  // "/" 경로로 이동하는 함수
+  const [isHovered, setIsHovered] = useState(false);
+  const [isHovered2, setIsHovered2] = useState(false);
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
+  const handleMouseEnter2 = () => {
+    setIsHovered2(true);
+  };
+  const handleMouseLeave2 = () => {
+    setIsHovered2(false);
+  };
+
+  const backgroundColor = isHovered ? "#6A68CE" : "#BABABA";
+  const backgroundColor2 = isHovered2 ? "#6A68CE" : "#BABABA";  
+
   const StartEvent = () => {
     navigate("/chamcham");
+  };
+  const StartEvent2 = () => {
+    navigate("/choosegame");
   };
 
 
   return (
     <div>
       <Container>
-				<Text style={{top: 88, fontSize: 88}}>참참참 GAME</Text>
-				<Text style={{top: 270, fontSize: 66}}>MISSION.</Text>
-				<Text style={{top: 350}}>제한 시간까지 <br/>우주선을 보호해라.</Text>
-				<Gchild style={{left: 234, }}>YES</Gchild>
-				<Gchild style={{left: 566, }}>NO</Gchild>
+				<Text style={{top: 2, fontSize: 88, color: 'white'}}>참참참 GAME</Text>
+				<Text style={{top: 145, fontSize: 66, color:'red'}}>MISSION.</Text>
+				<Text style={{top: 221}}>제한 시간까지 <br/>우주선을 보호해라.</Text>
+        <Gchild
+          style={{ left: 287, backgroundColor:backgroundColor }}
+          onClick={StartEvent}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          YES
+        </Gchild>
+        <Gchild
+          style={{ left: 566, backgroundColor: backgroundColor2 }}
+          onClick={StartEvent2}
+          onMouseEnter={handleMouseEnter2}
+          onMouseLeave={handleMouseLeave2}
+        >
+          NO
+        </Gchild>
 				<Img></Img>
       </Container>
       <Frame color={"#000000"} />
     </div>
   );
 }
-
+const Text2 = styled.div`
+    width: 737px;
+    height: 349px
+    color: white;
+    z-index: 999;
+    font-size: 30px;
+`
 const Container = styled.div`
   width: 100%;
 	top: 281px;
@@ -53,12 +94,11 @@ const Container = styled.div`
 `;	
 
 const Gchild = styled.button`
-	background-color: #BABABA;
   position: absolute;
 	top: 570px;
 	border: none;
-  width: 232px;
-  height: 232px;
+  width: 188px;
+  height: 188px;
   border-radius: 150px;
   color: #FFFFFF;
   font-size: 88px;
