@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Frame from "../components/Frame";
 import styled from "styled-components";
 import { useSpeechRecognition } from "react-speech-kit";
 import { useNavigate } from 'react-router-dom';
+import Timer from '../components/Timer';
+
 
 function Snack() {
   const [showOnBoarding, setShowOnBoarding] = useState(true);
@@ -11,8 +13,10 @@ function Snack() {
   const [value, setValue] = useState('');
   const [randomIndex, setRandomIndex] = useState(null);
   const [isCorrectAnswer, setIsCorrectAnswer] = useState(null);
-  const [correctAnswerCount, setCorrectAnswerCount] = useState(0);
+  const [correctAnswerCount, setCorrectAnswerCount] = useState(100);
   const [countdown, setCountdown] = useState(30); 
+  const inputRef = useRef();
+  const [passCount, setPassCount] = useState(1); // 패스 갯수
 
   const navigate = useNavigate();
 
@@ -58,7 +62,7 @@ function Snack() {
     `${process.env.PUBLIC_URL}/images/snackImage/ivy.jpg`,
     `${process.env.PUBLIC_URL}/images/snackImage/jagabi.jpeg`,
     `${process.env.PUBLIC_URL}/images/snackImage/kido.jpeg`,
-    `${process.env.PUBLIC_URL}/images/snackImage/litz.pnk`,
+    `${process.env.PUBLIC_URL}/images/snackImage/litz.png`,
     `${process.env.PUBLIC_URL}/images/snackImage/longs.jpeg`,
     `${process.env.PUBLIC_URL}/images/snackImage/lottesand.jpeg`,
     `${process.env.PUBLIC_URL}/images/snackImage/mizz.jpeg`,
@@ -166,43 +170,86 @@ function Snack() {
   });
   
   const handleListen = () => {
-    listen();
+    if (!listening) {
+      listen();
+    }
   };
+  useEffect(() => {
+    const startListening = async () => {
+      try {
+        await handleListen();
+      } catch (error) {
+        console.error('Error starting the microphone:', error);
+      }
+    };
+
+    if (!showOnBoarding) {
+      startListening(); // Automatically start listening when the onboarding screen is finished
+    }
+  }, [showOnBoarding]);
 
   const handleStop = () => {
     stop();
   };
-  const handleSend = (e) => {
-    setValue(e.target.value);
-    setTranscript(e.target.value);
-    console.log(isCorrectAnswer);
-    
-    const cleanedTranscript = transcript.replace(/\s/g, ''); 
-    const cleanedAnswer = imageListName[randomIndex].replace(/\s/g, ''); 
+
+
+  // const handleSend = () => {
+  //   const cleanedTranscript = transcript.replace(/\s/g, '');
+  //   const cleanedAnswer = imageListName[randomIndex].replace(/\s/g, '');
   
-    if (cleanedTranscript === cleanedAnswer) {
-      setIsCorrectAnswer(true);
-      setCorrectAnswerCount(correctAnswerCount + 1);
-      console.log(isCorrectAnswer, correctAnswerCount);
-      console.log("맞았습니다");
-      getNextProblem();
-    } else if(cleanedTranscript !== cleanedAnswer) {
-      console.log("틀렸습니다");
-      console.log(transcript, imageListName[randomIndex], randomIndex);
-      setIsCorrectAnswer(false);
-    } 
-  };
+  //   if (cleanedTranscript === cleanedAnswer) {
+  //     setIsCorrectAnswer(true);
+  //     setCorrectAnswerCount((prevCount) => prevCount + 100);
+  //     console.log(isCorrectAnswer, correctAnswerCount);
+  //     console.log("맞았습니다");
+  //     getNextProblem();
+  //   } else if (cleanedTranscript !== cleanedAnswer) {
+  //     console.log("틀렸습니다");
+  //     console.log(transcript, imageListName[randomIndex], randomIndex);
+  //     setIsCorrectAnswer(false);
+  //   }
+  // };
+  
+  useEffect(() => {
+    const recognizeAndCheckAnswer = () => {
+      const cleanedTranscript = (transcript ?? '').replace(/\s/g, '');
+      const cleanedAnswer = (imageListName[randomIndex] ?? '').replace(/\s/g, '');
+  
+      if (cleanedTranscript === cleanedAnswer) {
+        setIsCorrectAnswer(true);
+        setCorrectAnswerCount((prevCount) => prevCount + 100);
+        console.log(isCorrectAnswer, correctAnswerCount);
+        console.log("맞았습니다");
+        getNextProblem();
+      } else if (cleanedTranscript !== cleanedAnswer) {
+        console.log("틀렸습니다");
+        console.log(transcript, imageListName[randomIndex], randomIndex);
+        setIsCorrectAnswer(false);
+      }
+    };
+  
+    recognizeAndCheckAnswer();
+  }, [transcript]);
+  
+
+// Access correctAnswerCount value outside handleSend function
+console.log(correctAnswerCount);
+
+useEffect(() => {
+  localStorage.setItem("score", correctAnswerCount);
+}, [correctAnswerCount]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowOnBoarding(false);
       startCountdown();
     }, 2000);
-    
+
     return () => {
       clearTimeout(timer);
     };
   }, []);
+    
 
   const startCountdown = () => {
     const countdownTimer = setInterval(() => {
@@ -211,28 +258,29 @@ function Snack() {
 
     setTimeout(() => {
       clearInterval(countdownTimer);
+      handleStop();
       navigateToPage(); // Call the function to navigate to the desired page after the timer ends
-    }, 30000);
+    }, 60000);
   };
 
-  const navigateToPage = () => {
+  const navigateToPage = async () => {
     // Write your navigation logic here
     // For example, you can use React Router to navigate to a specific page
+    console.log(correctAnswerCount);
+    localStorage.setItem("game", "snack");
+    handleStop();
     navigate('/InfoInput');
-    console.log("navigator")
+    console.log("navigator");
   };
 
-
   useEffect(() => {
+    let timer;
     if (isCorrectAnswer !== null) {
-      const timer = setTimeout(() => {
-        setIsCorrectAnswer(null);
+      timer = setTimeout(() => {
+        setIsCorrectAnswer(null); // 1초 후에 isCorrectAnswer를 null로 설정하여 숨김
       }, 1000);
-      
-      return () => {
-        clearTimeout(timer);
-      };
     }
+    return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 클리어
   }, [isCorrectAnswer]);
   
 
@@ -264,7 +312,9 @@ function Snack() {
     setRandomIndex(newIndex);
   };
   
-
+  
+    
+       
   useEffect(() => {
     getRandomImage();
   }, []);
@@ -280,51 +330,73 @@ function Snack() {
     getRandomImage();
   };
 
+
+  function toNext() {
+    setPassCount(passCount+1);
+    getNextProblem();
+  }
+
+  const handleChange = (e) => {
+    const value = e.target.value;
+    setTimeout(() => {
+      setTranscript(value);
+    }, 500);
+  };
   
   return (
     <div style={{ display: 'flex', justifyContent: 'center' }}>
       <Container>
         {showOnBoarding && onBoarding()}
         {!showOnBoarding && (
-          <div style={{ maxWidth: '70vw', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-            {randomImage && <img src={randomImage} alt="Random" style={{ maxWidth: '600px' }} />}
+          <div style={{ maxWidth: '70vw', height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+            <Timer score={correctAnswerCount} second={60} />
+            {randomImage && <img src={randomImage} alt="Random" style={{ width: '50vw', height: '40vw' }} />}
             <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
-              <Button onClick={handleListen} disabled={listening} style={buttonStyle}>
-                Listen
-              </Button>
-              <Button onClick={handleStop} disabled={!listening} style={buttonStyle}>
-                Stop
-              </Button>
-              <span
-              style={{ border: '1px solid #ccc', margin: '2vw', cursor: 'text', color:'white', minWidth:'20vw', minHeight:'4vw' }}
-              onClick={() => document.getElementById('transcript-input').focus()}
-            >
-              {transcript || ''}
-            </span>
-            <input
-              id="transcript-input"
-              type="hidden"
-              value={transcript || ''}
-              onChange={(e) => setTranscript(e.target.value)}
-              placeholder="Enter the recognized text..."
-            />
-              <Button onClick={handleSend} style={buttonStyle}>Send</Button>
+              <SpeechBubble>
+                <span
+                  style={{ cursor: 'text', color: 'black', width: '50vw', height: '10vw', fontSize: '4vw', textAlign: 'center', marginTop: '5vw' }}
+                  onClick={() => inputRef.current.focus()}
+                >
+                  {transcript || ''}
+                </span>
+              </SpeechBubble>
+              <input
+                id="transcript-input"
+                type="hidden"
+                value={transcript || ''}
+                onChange={handleChange}
+                placeholder="Enter the recognized text..."
+                ref={inputRef}
+              />
             </div>
-            <div style={{minHeight : '5vw'}}>
-            {isCorrectAnswer ? (
+            <div style={{ minHeight: '5vw' }}>
+              {isCorrectAnswer === true ? (
                 <p style={correctAnswerStyle}>정답입니다!</p>
               ) : isCorrectAnswer === null ? (
                 <p style={correctAnswerStyle}>     </p>
-            ) : (
-              <p style={wrongAnswerStyle}>틀렸습니다</p>
-            )}
+              ) : (
+                <p style={wrongAnswerStyle}>틀렸습니다</p>
+              )}
             </div>
+            {/* Pass 버튼과 관련된 로직은 유지 */}
+            {4 - passCount > 0 ? (
+              <div>
+                <TextStyle visibility={true} onClick={toNext}>
+                  {4 - passCount} / 3
+                </TextStyle>
+                <PassBtn visibility={true} onClick={toNext}>
+                  PASS
+                </PassBtn>
+              </div>
+            ) : null}
           </div>
         )}
+        {!showOnBoarding && passCount >= 3 ? <PassBtn visibility={false} onClick={toNext}>PASS</PassBtn> : null}
       </Container>
       <Frame color="#000" />
     </div>
   );
+  
 }
 
 const correctAnswerStyle = {
@@ -339,6 +411,20 @@ const wrongAnswerStyle = {
   textAlign: 'center',
 };
 
+const inputStyle = {
+  fontSize:'50rem',
+  textAlign:'center'
+};
+
+
+const PassBtn = styled.button`
+  font-size: 5rem;
+  color: white;
+  cursor: pointer;
+  background: transparent;
+  visibility: ${(props)=> ( props.visibility ? "visible" : "hidden")};
+  margin-left : 1vw;
+`;
 
 const Button = styled.button`
   padding: 10px 20px;
@@ -366,16 +452,36 @@ const textStyletitle = {
   textShadow: '-10px 0px white, 0px 10px white, 10px 0px white, 0px -10px white',
 };
 
+const TextStyle = styled.div`
+  font-size: 5vw;
+  color: white;
+  text-align: center;
+  color: #fff;
+`;
+
 const textStyle = {
   fontSize: '5vw',
   color: 'white',
   textAlign: 'center',
-  paddingTop: '30vw'
+  paddingTop: '30vw',
+  color: '#fff'
 };
+
 
 const buttonStyle = {
   marginLeft : '2vw',
   marginRight : '2vw',
 }
 
+const SpeechBubble = styled.div`
+  width: 200vw;
+  height: 22vw;
+  background-image: url("images/speechbubble.png");
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  transform: ${(props) => props.rotate};
+  display: flex;
+  justify-content: center;
+`;
 export default Snack;
