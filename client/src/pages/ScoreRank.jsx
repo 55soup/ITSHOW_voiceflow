@@ -5,6 +5,7 @@ import Frame from "../components/Frame";
 import styled from "styled-components";
 
 export default function ScoreRank() {
+  const navigate = useNavigate();
   const [data, setData] = useState();
   const [done, setDone] = useState(false);
   const game = localStorage.getItem("game");
@@ -74,6 +75,7 @@ export default function ScoreRank() {
             </ScoreBoxContainer> 
             : "데이터를 가져오는 중..."}
         </ScoreContainer>
+        <Button onClick={()=>{navigate("/");}}>메인화면으로</Button>
         <Alien2 />
       </Container>
       <Frame />
@@ -175,4 +177,11 @@ const Alien2 = styled.div`
   height: 30rem;
   margin-top: 5rem;
   background: url('/images/alienScore.png') center/contain no-repeat;
-`
+`;
+const Button = styled.button`
+  font-size: 3rem;
+  background: #0A0083;
+  color: white;
+  padding: 1rem;
+  margin-left: 50rem;
+`;
