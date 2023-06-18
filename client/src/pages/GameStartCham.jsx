@@ -198,7 +198,7 @@ function Chamcham() {
   if(hartcount == -1) {
     alert(`Time OVER! 당신의 점수는? ${score}`);
     localStorage.setItem("score", score);
-    localStorage.setItem("game", "cham");
+    localStorage.setItem("game", "chamcham");
     navigate("/infoinput");
   }
 
