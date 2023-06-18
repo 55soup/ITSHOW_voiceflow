@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef,useCallback } from "react";
 import Frame from "../components/Frame";
 import styled from "styled-components";
 import * as faceapi from 'face-api.js';
-import Timer from "../components/Timer";
 import { useNavigate } from "react-router-dom";
 
 // 비디오 스타일을 정의한 객체
@@ -36,26 +35,67 @@ function Chamcham() {
   );
   // 3초 타이머
   const [timeLeft, setTimeLeft] = useState(3); //수정
-  //6초 감소 시킬 timeRef
-  const timeRef = useRef(Date.now());
   const [hartcount, setHeartCount] = useState(3);
   // 컴퓨터 선택 방향 상태
-  const [computerDirection, setComputerDirection] = useState("");
   const [userDirection, setUserDirection] = useState("");
   const [score, setScore] = useState(0)
   const [timerStart, setTimerStart] = useState(false)
   const navigate = useNavigate();
-  
+  const audioRef = useRef(null);
+
+  const playSoundEffect3 = useCallback(() => {
+    const audioElement = new Audio('over.mp3');
+    audioRef.current = audioElement;
+    audioElement.play()
+      .then(() => {
+        audioElement.currentTime = 0;
+      })
+      .catch((error) => {
+        console.error('Failed to play sound effect:', error);
+      });
+  }, []);
+
+  const playSoundEffect2 = useCallback(() => {
+    const audioElement = new Audio('time.mp3');
+    audioRef.current = audioElement;
+    audioElement.play()
+      .then(() => {
+        audioElement.currentTime = 0;
+      })
+      .catch((error) => {
+        console.error('Failed to play sound effect:', error);
+      });
+  }, []);
+
+  const playSoundEffect = useCallback(() => {
+    const audioElement = new Audio('out.mp3');
+    audioRef.current = audioElement;
+    audioElement.play()
+      .then(() => {
+        audioElement.currentTime = 0;
+        setHeartCount(-1)
+      })
+      .catch((error) => {
+        console.error('Failed to play sound effect:', error);
+      });
+  }, []);
+  useEffect(() => {
+    if (hartcount === 0) {
+      playSoundEffect();
+    }
+  }, [hartcount, playSoundEffect]);
+
   useEffect(() => {
     console.log(timerStart)
+    playSoundEffect2();
   }, [timerStart])
 
   // 컴포넌트가 처음 렌더링될 때 얼굴 방향을 감지하고 `userDirection` 상태를 설정합니다.
   useEffect(() => {
     let intervalId;
     if(timerStart) {
-      let timeLeft = 3;
         intervalId = setInterval(() => {
+          playSoundEffect2();
         setTimeLeft((prevTimeLeft) => {
           if (prevTimeLeft === 1 && hartcount > 0) {
             const randomDirection = getRandomDirection();
@@ -64,12 +104,12 @@ function Chamcham() {
               setScore((data) => data + 10)
             } else {
               console.log("다름", userDirection, randomDirection);
+              playSoundEffect3()
               setHeartCount((heartcount) => heartcount - 1); // 틀릴 때마다 heartCount 감소
               if (hartcount > 0) {
-                timeLeft = 3;
+                setTimeLeft(3);
               } else {
                 clearInterval(intervalId);
-                console.log("dssd");
               }
             }
           }
@@ -81,16 +121,11 @@ function Chamcham() {
     return () => {
       clearInterval(intervalId);
     };
-  }, [timerStart, userDirection]);  
+  }, [timerStart, userDirection,hartcount]);  
   
   // useRef 훅을 사용하여 typingTextRef라는 변수 생성
   const typingTextRef = useRef(null);
 
-  const handleTextChange = (text) => {
-    // 텍스트를 변경하는 함수
-    setText('ㅇ');
-    typingTextRef.current.resetTyping();
-  };
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   let previousNoseX = 0;
@@ -195,7 +230,7 @@ function Chamcham() {
     }
   };
 
-  if(hartcount == -1) {
+  if(hartcount === -1) {
     alert(`Time OVER! 당신의 점수는? ${score}`);
     localStorage.setItem("score", score);
     localStorage.setItem("game", "chamcham");
@@ -210,11 +245,8 @@ function Chamcham() {
 
 
   return (
-    <div>
+    <div onclick="initializeAudioContext()">
       <Container>
-        <div style={{position: 'absolute',top: '194px',fontSize: '20px', left: 493}}>
-        <Timer count={30}/>
-        </div>
       {hartcount >= 1 && <Heart />}
       {hartcount >= 2 && <Heart style={{ left: 244 }} />}
       {hartcount >= 3 && <Heart style={{ left: 320 }} />}
@@ -227,11 +259,6 @@ function Chamcham() {
         } 
         </Box>
         {hartcount <= 0 &&
-        // <Box2>  
-        //   대원, 덕분에 무사히 <br/>
-        //   우주선을 보호할 수 있었어요 ! <br />
-        //   대원의 점수는 {} 입니다.
-        // </Box2>
         <div>
           <Alien></Alien>
           <Alien style={{top: 800, left: 150, width: 305, height: 305}}></Alien>
