@@ -22,6 +22,7 @@ const Timer = (props) => {
 
     useEffect(() => {
         if (time < 0) {
+            props.handleStop();
             alert(`Time OVER! 당신의 점수는? ${props.score}`);
             localStorage.setItem("score", props.score);
             localStorage.setItem("game", "proverb");

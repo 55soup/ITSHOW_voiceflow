@@ -40,7 +40,7 @@ function GameStartProverb() {
     "쥐구멍에도",
     "닭 쫓던 개",
     "사공이 많으면 배가",
-    "될 성 부른 나무는",
+    "될 성 푸른 나무는",
     "벼는 익을 수록",
     "하룻강아지",
     "달면 삼키고",
@@ -100,6 +100,12 @@ function GameStartProverb() {
   const [toggle, setToggle] = useState(false);
   const [passCount, setPassCount] = useState(0); // 패스 갯수
 
+  const handleListen = () => {
+    if (!listening) {
+      listen();
+    }
+  };
+
   useEffect(() => {
     if (proverbBack[idx] === value) {
       // 말한 답이 정답과 일치하는가?
@@ -141,6 +147,24 @@ function GameStartProverb() {
     return () => clearInterval(timer);
   }, [time])
 
+  useEffect(() => {
+    const startListening = async () => {
+      try {
+        await handleListen();
+      } catch (error) {
+        console.error('Error starting the microphone:', error);
+      }
+    };
+
+    if (!gamestart) {
+      startListening(); // Automatically start listening when the onboarding screen is finished
+    }
+  }, [gamestart]);
+
+  const handleStop = () => {
+    stop();
+  };
+  
   // 마이크 버튼
   const clickedToggle = () => {
     setToggle((prev) => !prev);
@@ -159,7 +183,8 @@ function GameStartProverb() {
             <Text style={{zIndex: '500', fontSize: '10rem'}}>{time}</Text>
             <GameBackground />
           </> : 
-          <Timer score={count} second={60} />}
+          <Timer handleStop={handleStop} score={count} second={60} />
+        }
         <Text style={{position: 'relative', bottom: '20rem', right: '25rem'}}>score: {count}</Text>
         <Text style={{position: 'relative', bottom: '25rem', left: '20rem'}}>pass 횟수: {passCount}/3</Text>
         <img src="/images/proverb/ufo.png" alt="ufo" style={{marginTop: '-10rem'}}/>

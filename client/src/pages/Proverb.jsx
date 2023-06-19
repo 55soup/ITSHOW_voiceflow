@@ -25,9 +25,25 @@ function Proverb() {
     setToggle((prev) => !prev);
   };
   
-  // function toNext() {
-    //   setIdx(Math.floor(Math.random() * (proverbFront.length - 1)) + 1);
-    // }
+  const handleListen = () => {
+    if (!listening) {
+      listen();
+    }
+  };
+  useEffect(() => {
+    const startListening = async () => {
+      try {
+        await handleListen();
+      } catch (error) {
+        console.error('Error starting the microphone:', error);
+      }
+    };
+
+  }, []);
+
+  const handleStop = () => {
+    stop();
+  };
   
  /** 텍스트typing animation */
 const TypingText = React.forwardRef(({ text }, ref) => {
@@ -88,14 +104,15 @@ const [text, setText] = useState("신서유기 속담게임으로 담판을 짓�
 const [nextText, setNextText] = useState([
   "내가 속담 앞부분을 말하면 뒤에 \n부분을 이어 말하면 된다.",
   "한번 해볼까? 삐리빠라뽀. \n밑에 마이크모양 버튼을 눌러라.",
-  "버튼이 빨간색이 됐다면 마이크에 \n대고 [외계인님 감사합니다] 라고 외쳐!"
+  "버튼이 빨간색이 됐다면 마이크에\n대고 [외계인님 감사합니다] 라고 외쳐!"
 ])
 const [textIdx, setTextIdx] = useState(0);
 // useRef 훅을 사용하여 typingTextRef라는 변수 생성
 const typingTextRef = useRef(null);
-if(value==="외계인님 감사합니다") {
-  // setText("좋았어.ㅋ 그런식으로 답하면 된다. 시작해볼까?")
+if(value==="감사합니다") {
+  setText("좋았어.ㅋ 그런식으로 답하면 된다. 시작해볼까?")
   setTimeout(()=>{
+    handleStop();
     navigator("/startproverb");
   }, 5000);
 }
@@ -116,7 +133,9 @@ const handleTextChange = () => {
     <>
       <Container>
         {/* <Timer count={count}/> */}
-        <Text style={{position: 'absolute', right: '13vw', top: '22vw', cursor: 'pointer'}} onClick={()=>{navigator("/startproverb")}}>SKIP</Text>
+        <Text 
+          style={{position: 'absolute', right: '13vw', top: '22vw', cursor: 'pointer'}} 
+          onClick={()=>{handleStop(); navigator("/startproverb"); }}>SKIP</Text>
         <img src="/images/proverb/ufo.png" alt="ufo"/>
         <Alien />
         <div style={{display: 'flex', gap: '10rem'}}>
@@ -125,7 +144,7 @@ const handleTextChange = () => {
           <img src="/images/proverb/rocket.png" alt="rocket"/>
         </div>
         <SpeechBubble rotate={"rotate(180deg)"}>
-          <SpeechText style={{fontSize: "3.5rem"}} rotate={"rotate(180deg)"} padding={"13vw"}>
+          <SpeechText style={{fontSize: "3.5rem", whiteSpace: 'pre-wrap'}} rotate={"rotate(180deg)"} padding={"13vw"}>
             <TypingText text={text} ref={typingTextRef} />
           </SpeechText>
         </SpeechBubble>
@@ -138,12 +157,12 @@ const handleTextChange = () => {
         <RecordButton
         onClick={() => {
           clickedToggle();
-          !toggle ? listen({ interimResults: true }) : stop();
+          !toggle ? handleListen() : stop();
         }}
         toggle={toggle}>
         🎤
       </RecordButton>
-      {listening && <div>음성인식 활성화 중</div>}
+      {listening && null}
       </Container>
       <Frame color={"var(--background-main-color)"} />
     </>
