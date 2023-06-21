@@ -63,15 +63,23 @@ const TypingText = React.forwardRef(({ text }, ref) => {
       setCount((prevCount) => prevCount + 1);
     }, 50);
 
-    // Count가 텍스트의 길이와 같아지면
+    // Cㅁount가 텍스트의 길이와 같아지면
     if (Count === text.length) {
       // 인터벌 함수를 중지시킴
       clearInterval(interval);
     }
 
+    if(value==="외계인 님 감사합니다") { // 제대로 답할시
+      setText("좋았어.ㅋ 그런식으로 답하면 된다. 시작해볼까?")
+      handleStop();
+      setTimeout(()=>{
+        navigator("/startproverb");
+      }, 5000);
+    }
     // 컴포넌트가 사라질 때 인터벌 함수를 정리(cleanup)
     return () => clearInterval(interval);
     // Count와 text가 변경될 때마다 부수 효과 함수가 실행
+
   }, [Count, text]);
 
   useEffect(() => {
@@ -104,18 +112,11 @@ const [text, setText] = useState("신서유기 속담게임으로 담판을 짓�
 const [nextText, setNextText] = useState([
   "내가 속담 앞부분을 말하면 뒤에 \n부분을 이어 말하면 된다.",
   "한번 해볼까? 삐리빠라뽀. \n밑에 마이크모양 버튼을 눌러라.",
-  "버튼이 빨간색이 됐다면 마이크에\n대고 [외계인님 감사합니다] 라고 외쳐!"
+  "버튼이 빨간색이 됐다면 마이크에\n대고 [외계인 님 감사합니다] 라고 외쳐!"
 ])
 const [textIdx, setTextIdx] = useState(0);
 // useRef 훅을 사용하여 typingTextRef라는 변수 생성
 const typingTextRef = useRef(null);
-if(value==="감사합니다") {
-  setText("좋았어.ㅋ 그런식으로 답하면 된다. 시작해볼까?")
-  setTimeout(()=>{
-    handleStop();
-    navigator("/startproverb");
-  }, 5000);
-}
 
 const handleTextChange = () => {
   setTextIdx(textIdx+1);
@@ -125,6 +126,7 @@ const handleTextChange = () => {
       setText("...왜 안하는건가?ㅋ");
     }, 8000)
   }
+
   // typingTextRef의 resetTyping 함수 호출
   typingTextRef.current.resetTyping();
 };
