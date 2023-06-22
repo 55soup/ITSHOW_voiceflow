@@ -27,7 +27,7 @@ export default function InfoInput() {
         headers: {
           "Content-Type": "application/json; charset=utf-8",
         },
-        body: JSON.stringify({name, phone, score, game}), //json형태로 보내야함
+        body: JSON.stringify({name, phone, score: parseInt(score), game}), //json형태로 보내야함
       })
         .then((res) => {
           console.log(res);
