@@ -179,12 +179,12 @@ function Snack() {
       try {
         await handleListen();
       } catch (error) {
-        console.error('Error starting the microphone:', error);
+        console.error('Error:', error);
       }
     };
 
     if (!showOnBoarding) {
-      startListening(); // Automatically start listening when the onboarding screen is finished
+      startListening();
     }
   }, [showOnBoarding]);
 
@@ -231,8 +231,6 @@ function Snack() {
     recognizeAndCheckAnswer();
   }, [transcript]);
   
-
-// Access correctAnswerCount value outside handleSend function
 console.log(correctAnswerCount);
 
 useEffect(() => {
@@ -259,13 +257,11 @@ useEffect(() => {
     setTimeout(() => {
       clearInterval(countdownTimer);
       handleStop();
-      navigateToPage(); // Call the function to navigate to the desired page after the timer ends
+      navigateToPage();
     }, 60000);
   };
 
   const navigateToPage = async () => {
-    // Write your navigation logic here
-    // For example, you can use React Router to navigate to a specific page
     console.log(correctAnswerCount);
     localStorage.setItem("game", "snack");
     handleStop();
@@ -378,7 +374,6 @@ useEffect(() => {
                 <p style={wrongAnswerStyle}>틀렸습니다</p>
               )}
             </div>
-            {/* Pass 버튼과 관련된 로직은 유지 */}
             {4 - passCount > 0 ? (
               <div>
                 <TextStyle visibility={true} onClick={toNext}>
